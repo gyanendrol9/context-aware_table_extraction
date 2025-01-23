@@ -66,12 +66,12 @@ Digitize new tabular records:
 
 
 
-# Results:
+### Results:
 - Word Error Rate (WER): 0.049
 - Character Error Rate (CER): 0.035
 - Improvement: Up to 41% in OCR tasks and 10.74% in table reconstruction tasks compared to existing methods.
 
 
-# Acknowledgments:
+### Acknowledgments:
 This work is funded through the Natural Environment Research Council (grant NE/S015604/1) and WCSSP South Africa project, a collaborative initiative between the Met Office, South African, and UK partners, supported by the International Science Partnership Fund (ISPF) from the UK's Department for Science, Innovation and Technology (DSIT).  It is also supported by the Centre for Machine Intelligence (CMI) and Web Science Institute (WSI). The authors acknowledge the IRIDIS High-Performance Computing Facility at the University of Southampton.
 
