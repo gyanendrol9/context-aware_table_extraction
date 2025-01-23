@@ -31,15 +31,15 @@ Ensure you have the following installed on your system:
 ### Installation  
 1. Clone the repository:  
    ```bash  
-   git clone https://github.com/your-repo-name/your-project-name.git  
-   cd your-project-name  
+   git clone https://github.com/gyanendrol9/table_extraction.git  
+   cd table_extraction  
    ```
 
 2. Create a virtual environment and activate it:  
    ```bash  
-   python -m venv env  
-   source env/bin/activate   # On Windows: env\Scripts\activate  
-   ```
+    # create ocr_env env in conda
+    conda create --name ocr_env python=3.8
+    conda activate ocr_env   ```
 
 3. Install dependencies:
     ```bash 
@@ -52,17 +52,26 @@ The dataset is hosted on Zenodo. Download the dataset and extract it to the data
 [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
 
 
-Evaluate the Model
-
+5. Evaluate the Model
 Evaluate the model performance on a test set:
+    ```bash 
+    python scripts/evaluate.py --model_dir ./models --test_data ./processed_data/test  
+    ```
 
-python scripts/evaluate.py --model_dir ./models --test_data ./processed_data/test  
-
-4. Perform Inference
-
+6. Perform Inference
 Digitize new tabular records:
+    ```bash
+    python scripts/inference.py --model_dir ./models --input ./samples/input_image.jpg --output ./output/  
+    ```
 
-python scripts/inference.py --model_dir ./models --input ./samples/input_image.jpg --output ./output/  
 
+Results:
+    ```
+    Word Error Rate (WER): 0.049
+    Character Error Rate (CER): 0.035
+    Improvement: Up to 41% in OCR tasks and 10.74% in table reconstruction tasks compared to existing methods.
+    ```
 
-You can copy and paste this directly into your `README.md`. Let me know if there’s anything else!
+Acknowledgments:
+This work is funded through the Natural Environment Research Council (grant NE/S015604/1) and WCSSP South Africa project, a collaborative initiative between the Met Office, South African, and UK partners, supported by the International Science Partnership Fund (ISPF) from the UK's Department for Science, Innovation and Technology (DSIT).  It is also supported by the Centre for Machine Intelligence (CMI) and Web Science Institute (WSI). The authors acknowledge the IRIDIS High-Performance Computing Facility at the University of Southampton.
+
