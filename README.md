@@ -32,25 +32,24 @@ Ensure you have the following installed on your system:
 1. Clone the repository:  
    ```bash  
    git clone https://github.com/your-repo-name/your-project-name.git  
-   cd your-project-name  '''
+   cd your-project-name  
+   ```
 
 2. Create a virtual environment and activate it:  
    ```bash  
    python -m venv env  
-   source env/bin/activate   # On Windows: env\Scripts\activate  '''
-
-
+   source env/bin/activate   # On Windows: env\Scripts\activate  
+   ```
 
 3. Install dependencies:
     ```bash 
     pip install -r requirements.txt  
-    '''
+    ```
 
 4. Dataset Setup
 
 The dataset is hosted on Zenodo. Download the dataset and extract it to the data/ directory:
-
-    [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
+[UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
 
 
 Evaluate the Model
