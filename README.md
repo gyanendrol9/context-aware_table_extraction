@@ -5,7 +5,8 @@
 ## Overview  
 Digitizing historical tabular records is essential for preserving and analyzing valuable data across various domains. This repository contains the source code, dataset, and pre-trained models introduced in the paper:  
 
-**Title:** "Digitizing Historical Tabular Records with a Comprehensive OCR Framework"  
+**Title:** "Tabular Context-aware Optical Character Recognition and Tabular Data Reconstruction for Historical Records"  
+
 **Abstract:**  
 > Digitizing historical tabular records is essential for preserving and analyzing valuable data across various fields, but it presents challenges due to complex layouts, mixed text types, and degraded document quality. This paper introduces a comprehensive framework to address these issues through three key contributions:  
 > - **UoS_Data_Rescue Dataset:** A novel dataset of 1,113 historical logbooks with 594,000 annotated text cells, tackling challenges like handwritten entries, aging artifacts, and intricate layouts.  
@@ -38,3 +39,31 @@ Ensure you have the following installed on your system:
    python -m venv env  
    source env/bin/activate   # On Windows: env\Scripts\activate  '''
 
+
+
+3. Install dependencies:
+    ```bash 
+    pip install -r requirements.txt  
+    '''
+
+4. Dataset Setup
+
+The dataset is hosted on Zenodo. Download the dataset and extract it to the data/ directory:
+
+    [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
+
+
+Evaluate the Model
+
+Evaluate the model performance on a test set:
+
+python scripts/evaluate.py --model_dir ./models --test_data ./processed_data/test  
+
+4. Perform Inference
+
+Digitize new tabular records:
+
+python scripts/inference.py --model_dir ./models --input ./samples/input_image.jpg --output ./output/  
+
+
+You can copy and paste this directly into your `README.md`. Let me know if there’s anything else!
