@@ -20,17 +20,24 @@ The framework offers a robust solution for large-scale digitization of tabular d
 This framework involves three main modules to digitize tabular data effectively:  
 
 1. **Table Structure Recognition (TSR):**  
-   TSR is the process of identifying and reconstructing the layout of a table, including detecting table boundaries, cell boundaries, and the relationships between rows and columns. This step is crucial to preserve the structural integrity of the tabular data for accurate digitization.
-   
-   The TSR module in this framework is implemented using [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet), a state-of-the-art model for table structure recognition. 
-   > Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+    TSR is the process of identifying and reconstructing the layout of a table, including detecting table boundaries, cell boundaries, and the relationships between rows and columns. This step is crucial to preserve the structural integrity of the tabular data for accurate digitization.
+
+    - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet), a state-of-the-art model for table structure recognition.  
+    - **Prerequisites:**  
+    - Python 3.7  
+    - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
+        > Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+
 
 2. **Text Extraction:**  
-   This step extracts textual content from the cells identified by the TSR module.  
-   - **Model:** TrOCR-ctx ([TrOCR](https://huggingface.co/docs/transformers/en/model_doc/trocr) with contextual embedding).  
-   - **Key Features:**  
-     - Context-aware text extraction to reduce cascading errors.  
-     - Handles challenges like handwritten entries, degraded text, and mixed languages.  
+    This step extracts textual content from the cells identified by the TSR module.  
+    - **Model Used:** TrOCR-ctx ([TrOCR](https://huggingface.co/docs/transformers/en/model_doc/trocr) with contextual embedding).  
+    - **Key Features:**  
+    - Context-aware text extraction to reduce cascading errors.  
+    - Handles challenges like handwritten entries, degraded text, and mixed languages.  
+    - **Prerequisites:**  
+    - Python 3.8+  
+    - Libraries such as `torch`, `transformers`, and `datasets`.  
 
 3. **Tabular Data Reconstruction:**  
    After text extraction, this module aligns the textual data with the recognized table structure to generate a final digital table.  
@@ -41,14 +48,6 @@ This framework involves three main modules to digitize tabular data effectively:
 - **Dataset:** UoS_Data_Rescue, a rich collection of historical tabular data.  
 - **Models:** Pre-trained TrOCR-ctx and ByT5 for OCR tasks.  
 - **Pipeline:** End-to-end OCR processing with real-time post-OCR correction.  
-
-## Setup Instructions  
-
-### Prerequisites  
-Ensure you have the following installed on your system:  
-- Python 3.8+  
-- Git  
-- CUDA-enabled GPU (optional, for model training/inference)  
 
 ## Installation  
 1. Clone the repository:  
