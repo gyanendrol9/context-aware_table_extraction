@@ -19,8 +19,10 @@ The framework offers a robust solution for large-scale digitization of tabular d
 This framework involves three main modules to digitize tabular data effectively:  
 
 1. **Table Structure Recognition (TSR):**  
-   TSR is the process of identifying and reconstructing the layout of a table, including cell boundaries and relationships between rows and columns. This step ensures the correct structure of tabular data is preserved.  
-   > Details on Table Structure Recognition can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+   TSR is the process of identifying and reconstructing the layout of a table, including detecting table boundaries, cell boundaries, and the relationships between rows and columns. This step is crucial to preserve the structural integrity of the tabular data for accurate digitization.
+   
+   The TSR module in this framework is implemented using CascadeTabNet, a state-of-the-art model for table structure recognition. 
+   > Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
 
 2. **Text Extraction:**  
    This step extracts textual content from the cells identified by the TSR module.  
