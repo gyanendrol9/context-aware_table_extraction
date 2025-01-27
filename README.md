@@ -2,11 +2,11 @@
 
 [![License](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
+
 ## Overview  
 Digitizing historical tabular records is essential for preserving and analyzing valuable data across various domains. This repository contains the source code, dataset, and pre-trained models introduced in the paper:  
 
-**Title:** "Tabular Context-aware Optical Character Recognition and Tabular Data Reconstruction for Historical Records"  
-
+**Title:** "Digitizing Historical Tabular Records with a Comprehensive OCR Framework"  
 **Abstract:**  
 > Digitizing historical tabular records is essential for preserving and analyzing valuable data across various fields, but it presents challenges due to complex layouts, mixed text types, and degraded document quality. This paper introduces a comprehensive framework to address these issues through three key contributions:  
 > - **UoS_Data_Rescue Dataset:** A novel dataset of 1,113 historical logbooks with 594,000 annotated text cells, tackling challenges like handwritten entries, aging artifacts, and intricate layouts.  
@@ -14,6 +14,25 @@ Digitizing historical tabular records is essential for preserving and analyzing 
 > - **Enhanced End-to-End OCR Pipeline:** Integrates TrOCR-ctx with ByT5 for real-time post-OCR correction, improving multilingual support and achieving state-of-the-art performance.  
 
 The framework offers a robust solution for large-scale digitization of tabular documents, extending applications beyond climate records to other domains requiring structured document preservation.  
+
+## Pipeline for Digitizing Historical Tabular Data  
+This framework involves three main modules to digitize tabular data effectively:  
+
+1. **Table Structure Recognition (TSR):**  
+   TSR is the process of identifying and reconstructing the layout of a table, including cell boundaries and relationships between rows and columns. This step ensures the correct structure of tabular data is preserved.  
+   > Details on Table Structure Recognition can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+
+2. **Text Extraction:**  
+   This step extracts textual content from the cells identified by the TSR module.  
+   - **Model:** TrOCR-ctx (Transformer-based OCR with contextual embedding).  
+   - **Key Features:**  
+     - Context-aware text extraction to reduce cascading errors.  
+     - Handles challenges like handwritten entries, degraded text, and mixed languages.  
+
+3. **Tabular Data Reconstruction:**  
+   After text extraction, this module aligns the textual data with the recognized table structure to generate a final digital table.  
+   - **Post-OCR Correction:** Uses ByT5 for real-time corrections, improving character and word error rates.  
+   - **Output:** Fully digitized and reconstructed tables in a structured format like CSV or JSON.  
 
 ## Features  
 - **Dataset:** UoS_Data_Rescue, a rich collection of historical tabular data.  
