@@ -108,7 +108,8 @@ This framework involves three main components: **Table Structure Recognition (TS
 6. Evaluate the Model
 Evaluate the model performance on a test set:
     ```bash 
-    python scripts/evaluate.py --model_dir ./models --test_data ./processed_data/test  
+    python testing-finetuned-TrOCR.py  
+    python TDE-evaluation-v2.py
     ```
 
 7. Perform Inference
