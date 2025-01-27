@@ -29,7 +29,7 @@ This framework involves three main modules to digitize tabular data effectively:
             - Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
         > - YAML file for setting up the environment is provided [here](environment/open-mmlab.yml). Update the environment using the provided YAML file:
         ```bash  
-        conda env update --name open-mmlab --file open-mmlab.yml
+        conda env update --name open-mmlab --file environment/open-mmlab.yml
         ```
 
 2. **Text Extraction:**  
@@ -66,7 +66,7 @@ This framework involves three main modules to digitize tabular data effectively:
     conda create --name ocrenv python=3.8
     
     # Update the environment using the provided YAML file
-    conda env update --name ocrenv --file ocrenv.yml
+    conda env update --name ocrenv --file environment/ocrenv.yml
     ```
 
 3. Install dependencies:
