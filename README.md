@@ -97,15 +97,13 @@ This framework involves three main components: **Table Structure Recognition (TS
     ```
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
-    The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
-
-    A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
-
-    To execute the reconstruction step, run the following command:
-        ``` 
+    - The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
+    - A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
+    - To execute the reconstruction step, run the following command:
+        ```bash 
         python reconstruction_v3-folder.py
         ```  
-
+        
 6. Evaluate the Model
 Evaluate the model performance on a test set:
     ```bash 
