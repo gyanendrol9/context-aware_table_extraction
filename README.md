@@ -103,7 +103,7 @@ The final step in the pipeline involves reconstructing the tabular data by align
 A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
 
 To execute the reconstruction step, run the following command:
-    ```bash
+    ```bash 
     python reconstruction_v3-folder.py
     ```  
 
