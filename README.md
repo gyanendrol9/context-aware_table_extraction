@@ -7,6 +7,7 @@
 Digitizing historical tabular records is essential for preserving and analyzing valuable data across various domains. This repository contains the source code, dataset, and pre-trained models introduced in the paper:  
 
 **Title:** "Tabular Context-aware Optical Character Recognition and Tabular Data Reconstruction for Historical Records"  [Paper link](https://www.researchsquare.com/article/rs-5462018/v1)
+
 **Abstract:**  
 > Digitizing historical tabular records is essential for preserving and analyzing valuable data across various fields, but it presents challenges due to complex layouts, mixed text types, and degraded document quality. This paper introduces a comprehensive framework to address these issues through three key contributions:  
 > - **UoS_Data_Rescue Dataset:** A novel dataset of 1,113 historical logbooks with 594,000 annotated text cells, tackling challenges like handwritten entries, aging artifacts, and intricate layouts.  
