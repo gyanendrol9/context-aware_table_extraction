@@ -76,12 +76,6 @@ The dataset is hosted on Zenodo. Download the dataset and extract it to the data
 This framework involves three main components: **Table Structure Recognition (TSR)**, **Text Extraction (TrOCR-ctx)**, and **Tabular Data Reconstruction**. Each step is trained separately to ensure high performance across the pipeline.
 
 - Pipeline Integration  
-    The digitization pipeline consists of the following steps:  
-    1. **TSR:** Processes the input image and detects table structure boundaries, including cells and their relationships.  
-    2. **TrOCR-ctx:** Extracts text from the identified cells, improving accuracy through a context-aware approach.  
-    3. **Reconstruction:** Aligns the extracted text with the table structure to produce the final tabular data in structured formats such as CSV or JSON.  
-
-
     > Step 1: Train the TSR Model  
     Table Structure Recognition (TSR) identifies and reconstructs the table layout, including table boundaries, cell boundaries, and relationships between rows and columns.  
     - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet)  
