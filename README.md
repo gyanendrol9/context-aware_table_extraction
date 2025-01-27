@@ -81,7 +81,6 @@ This framework involves three main components: **Table Structure Recognition (TS
     2. **TrOCR-ctx:** Extracts text from the identified cells, improving accuracy through a context-aware approach.  
     3. **Reconstruction:** Aligns the extracted text with the table structure to produce the final tabular data in structured formats such as CSV or JSON.  
 
-    Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
 
     > Step 1: Train the TSR Model  
     Table Structure Recognition (TSR) identifies and reconstructs the table layout, including table boundaries, cell boundaries, and relationships between rows and columns.  
@@ -103,7 +102,9 @@ This framework involves three main components: **Table Structure Recognition (TS
         ```bash 
         python reconstruction_v3-folder.py
         ```  
-        
+
+    Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
+
 6. Evaluate the Model
 Evaluate the model performance on a test set:
     ```bash 
@@ -115,8 +116,6 @@ Digitize new tabular records:
     ```bash
     python scripts/inference.py --model_dir ./models --input ./samples/input_image.jpg --output ./output/  
     ```
-
-
 
 ### Results:
 - Word Error Rate (WER): 0.049
