@@ -24,9 +24,10 @@ This framework involves three main modules to digitize tabular data effectively:
 
     - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet), a state-of-the-art model for table structure recognition.  
     - **Prerequisites:**  
-    - Python 3.7  
-    - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
-        > Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+        - Python 3.7  
+        - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
+            > Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+        - YAML file for setting up the environment is provided [here](environment/open-mmlab.yml).  
 
 
 2. **Text Extraction:**  
@@ -38,6 +39,7 @@ This framework involves three main modules to digitize tabular data effectively:
     - **Prerequisites:**  
         - Python 3.8+  
         - Libraries such as `torch`, `transformers`, and `datasets`.  
+        - YAML file for setting up the environment is provided [here](environment/ocrenv.yml).  
 
 3. **Tabular Data Reconstruction:**  
    After text extraction, this module aligns the textual data with the recognized table structure to generate a final digital table.  
@@ -58,8 +60,8 @@ This framework involves three main modules to digitize tabular data effectively:
 
 2. Create a virtual environment and activate it:  
    ```bash  
-    # create ocr_env env in conda
-    conda create --name ocr_env python=3.8
+    # create ocrenv env in conda
+    conda create --name ocrenv python=3.8
 
 3. Install dependencies:
     ```bash 
