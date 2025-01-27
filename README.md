@@ -51,61 +51,60 @@ Ensure you have the following installed on your system:
 - CUDA-enabled GPU (optional, for model training/inference)  
 
 ## Installation  
-### 1. Clone the repository:  
+1. Clone the repository:  
    ```bash  
    git clone https://github.com/gyanendrol9/table_extraction.git  
    cd table_extraction  
    ```
 
-### 2. Create a virtual environment and activate it:  
+2. Create a virtual environment and activate it:  
    ```bash  
     # create ocr_env env in conda
     conda create --name ocr_env python=3.8
-    ```
 
-### 3. Install dependencies:
+3. Install dependencies:
     ```bash 
     pip install -r requirements.txt  
     ```
 
-### 4. Dataset Setup:
+4. Dataset Setup:
 
 The dataset is hosted on Zenodo. Download the dataset and extract it to the data/ directory:
 [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
 
-### 5. Train the Model  
+5. Train the Model  
 This framework involves three main components: **Table Structure Recognition (TSR)**, **Text Extraction (TrOCR-ctx)**, and **Tabular Data Reconstruction**. Each step is trained separately to ensure high performance across the pipeline.
 
-#### Pipeline Integration  
-The digitization pipeline consists of the following steps:  
-1. **TSR:** Processes the input image and detects table structure boundaries, including cells and their relationships.  
-2. **TrOCR-ctx:** Extracts text from the identified cells, improving accuracy through a context-aware approach.  
-3. **Reconstruction:** Aligns the extracted text with the table structure to produce the final tabular data in structured formats such as CSV or JSON.  
+- Pipeline Integration  
+    The digitization pipeline consists of the following steps:  
+    1. **TSR:** Processes the input image and detects table structure boundaries, including cells and their relationships.  
+    2. **TrOCR-ctx:** Extracts text from the identified cells, improving accuracy through a context-aware approach.  
+    3. **Reconstruction:** Aligns the extracted text with the table structure to produce the final tabular data in structured formats such as CSV or JSON.  
 
-Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
+    Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
 
-#### Step 1: Train the TSR Model  
-Table Structure Recognition (TSR) identifies and reconstructs the table layout, including table boundaries, cell boundaries, and relationships between rows and columns.  
-- **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet)  
-   Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+    > Step 1: Train the TSR Model  
+    Table Structure Recognition (TSR) identifies and reconstructs the table layout, including table boundaries, cell boundaries, and relationships between rows and columns.  
+    - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet)  
+    Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
 
-#### Step 2: Train the Text Extraction Model (TrOCR-ctx)  
-TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text.  
-- **Training Instructions:**  
-   ```bash
-   conda activate ocr_env   
-   python train-trocr-combine-loss.py
-   ```
+    > Step 2: Train the Text Extraction Model (TrOCR-ctx)  
+    TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text.  
+    - **Training Instructions:**  
+    ```bash
+    conda activate ocr_env   
+    python train-trocr-combine-loss.py
+    ```
 
-#### Step 3: Heuristic Approach to Tabular Data Reconstruction  
-The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
+    > Step 3: Heuristic Approach to Tabular Data Reconstruction  
+    The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
 
-A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
+    A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
 
-To execute the reconstruction step, run the following command:
-    ``` 
-    python reconstruction_v3-folder.py
-    ```  
+    To execute the reconstruction step, run the following command:
+        ``` 
+        python reconstruction_v3-folder.py
+        ```  
 
 6. Evaluate the Model
 Evaluate the model performance on a test set:
