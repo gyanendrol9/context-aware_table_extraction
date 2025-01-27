@@ -1,4 +1,4 @@
-name: open-mmlab-clone
+name: open-mmlab
 channels:
   - anaconda
   - defaults
@@ -30,4 +30,3 @@ dependencies:
     - pdf2image==1.17.0
     - xml-utils==1.21.0
     - xmltodict==0.13.0
-prefix: /scratch/gsl1r22/Files/anaconda3/envs/open-mmlab-clone

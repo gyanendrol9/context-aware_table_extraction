@@ -242,4 +242,3 @@ dependencies:
     - xdoctest==1.2.0
     - yapf==0.40.2
     - zipp==3.20.0
-prefix: /scratch/gsl1r22/Files/anaconda3/envs/ocrenv
