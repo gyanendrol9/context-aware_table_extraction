@@ -24,22 +24,22 @@ This framework involves three main modules to digitize tabular data effectively:
 
     - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet), a state-of-the-art model for table structure recognition.  
     - **Prerequisites:**  
-        - Python 3.7  
-        - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
-            > Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
-        - YAML file for setting up the environment is provided [here](environment/open-mmlab.yml).  
+        > - Python 3.7  
+        > - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
+            -- Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
+        > - YAML file for setting up the environment is provided [here](environment/open-mmlab.yml).  
 
 
 2. **Text Extraction:**  
     This step extracts textual content from the cells identified by the TSR module.  
     - **Model Used:** TrOCR-ctx ([TrOCR](https://huggingface.co/docs/transformers/en/model_doc/trocr) with contextual embedding).  
     - **Key Features:**  
-        - Context-aware text extraction to reduce cascading errors.  
-        - Handles challenges like handwritten entries, degraded text, and mixed languages.  
+        > - Context-aware text extraction to reduce cascading errors.  
+        > - Handles challenges like handwritten entries, degraded text, and mixed languages.  
     - **Prerequisites:**  
-        - Python 3.8+  
-        - Libraries such as `torch`, `transformers`, and `datasets`.  
-        - YAML file for setting up the environment is provided [here](environment/ocrenv.yml).  
+        > - Python 3.8+  
+        > - Libraries such as `torch`, `transformers`, and `datasets`.  
+        > - YAML file for setting up the environment is provided [here](environment/ocrenv.yml).  
 
 3. **Tabular Data Reconstruction:**  
    After text extraction, this module aligns the textual data with the recognized table structure to generate a final digital table.  
