@@ -1,4 +1,4 @@
-# UoS Data Rescue: A Framework for Digitizing Historical Tabular Records  
+# A Framework for Digitizing Historical Tabular Records  
 
 [![License](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
@@ -39,7 +39,8 @@ Ensure you have the following installed on your system:
    ```bash  
     # create ocr_env env in conda
     conda create --name ocr_env python=3.8
-    conda activate ocr_env   ```
+    conda activate ocr_env   
+    ```
 
 3. Install dependencies:
     ```bash 
