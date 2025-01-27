@@ -50,25 +50,25 @@ Ensure you have the following installed on your system:
 - Git  
 - CUDA-enabled GPU (optional, for model training/inference)  
 
-### Installation  
-1. Clone the repository:  
+## Installation  
+### 1. Clone the repository:  
    ```bash  
    git clone https://github.com/gyanendrol9/table_extraction.git  
    cd table_extraction  
    ```
 
-2. Create a virtual environment and activate it:  
+### 2. Create a virtual environment and activate it:  
    ```bash  
     # create ocr_env env in conda
     conda create --name ocr_env python=3.8
     ```
 
-3. Install dependencies:
+### 3. Install dependencies:
     ```bash 
     pip install -r requirements.txt  
     ```
 
-4. Dataset Setup:
+### 4. Dataset Setup:
 
 The dataset is hosted on Zenodo. Download the dataset and extract it to the data/ directory:
 [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
@@ -103,7 +103,7 @@ The final step in the pipeline involves reconstructing the tabular data by align
 A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
 
 To execute the reconstruction step, run the following command:
-    ```bash 
+    ``` 
     python reconstruction_v3-folder.py
     ```  
 
