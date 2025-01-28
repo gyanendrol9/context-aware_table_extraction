@@ -88,7 +88,7 @@ This framework involves three main components: **Table Structure Recognition (TS
     Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
 
     > Step 2: Train the Text Extraction Model (TrOCR-ctx)  
-    TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text. The TrOCR model and T5 model are trained jointly, with losses from both models contributing to the overall training objective. 
+    TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text. The [TrOCR](https://huggingface.co/docs/transformers/en/model_doc/trocr) and [ByT5](https://huggingface.co/yelpfeast/byt5-base-english-ocr-correction) models are trained jointly, with losses from both models contributing to the overall training objective. 
     - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
