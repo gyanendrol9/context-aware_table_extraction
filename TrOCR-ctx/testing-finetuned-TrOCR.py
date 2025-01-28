@@ -15,6 +15,11 @@ import torch
 import os
 import json
 import jsonlines
+import sys
+
+
+workdir = 'Text-recognition/'
+img_source = f"{workdir}/data/glosat/"
 
 model_name = "microsoft/trocr-large-handwritten"
 
@@ -96,13 +101,10 @@ class MyTrainDataset(Dataset):
         
         return inputs
 
-workdir = 'Text-recognition/'
-
 out_dir = f'{workdir}/TR-OCR-drafrica-result'
 if not os.path.exists(out_dir):
     os.mkdir(out_dir)
 
-img_source = f"{workdir}/data/glosat/"
 ann_jsonl = f"{img_source}/textrecog_test.json"
 
 data_dict = []

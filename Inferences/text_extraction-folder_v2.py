@@ -1,6 +1,6 @@
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
-from transformers import AutoTokenizer, AutoProcessor, AutoModelForTokenClassification
+from transformers import AutoTokenizer
 from transformers import T5ForConditionalGeneration
 
 from PIL import Image, ImageDraw, ImageFont
@@ -18,20 +18,8 @@ def draw_bbox(image, bbox):
 
 #Training case
 from transformers import (
-
-    TrOCRConfig,
-
     TrOCRProcessor,
-
-    TrOCRForCausalLM,
-
-    ViTConfig,
-
-    ViTModel,
-
-    VisionEncoderDecoderModel,
-    ViTFeatureExtractor,
-
+    VisionEncoderDecoderModel
 )
 
 import torch
@@ -50,6 +38,8 @@ import numpy as np
 
 img_dir = sys.argv[1]
 out_dir = sys.argv[2]
+
+workdir = 'Tabular-Data-Extraction'
 
 
 def thresholding(image):
@@ -83,82 +73,6 @@ def preprocess_image(image):
 import matplotlib.pyplot as plt 
 import textwrap
 
-# def plot_text_image(draw, annotated_image,bbox,digitized_text):
-#     # Create a new image with the same height as the original image and double the width
-#     x,y,x_max,y_max = bbox[:4]
-#     y0 = y
-    
-#     digitized_text = digitized_text.encode('utf-8')
-    
-#     text = digitized_text.decode('utf-8')
-
-#     # Calculate the position for the top-left corner of the rectangle
-#     rectangle_position = (x, y)
-
-#     # Calculate the size of the rectangle needed to fit the text
-#     text_size = draw.textsize(digitized_text)
-
-#     # Calculate the position for the bottom-right corner of the rectangle
-#     rectangle_size = (x + text_size[0], y + text_size[1])
-
-#     # Calculate the new x-coordinate for the digitized text
-#     new_x = annotated_image.width // 2 + x
-    
-#     text_width, text_height = font.getsize(text)
-    
-#     box_x1, box_y1 = x, y - text_height
-#     box_x2, box_y2 = x + text_width, y
-
-#     special_flag = 0
-#     if '@@@' in text:
-#         special_flag = 1
-#     elif '$$$' in text:
-#         special_flag = 2
-#     elif '###' in text:
-#         special_flag = 3
-
-        
-#     if box_x2 > im_width:
-#         # wrapped_text = textwrap.wrap(text, width=int(width*0.2))
-#         wrapped_text = textwrap.wrap(text, width=int(0.15*(x_max-x)))
-#     #     print(new_x)
-
-#         # Draw the red rectangle behind the text on the new image
-#         # draw.rectangle([(new_x, y), (new_x + text_size[0], y + text_size[1])])
-
-
-#         for line in wrapped_text:
-#             # Draw the line of text
-#             draw.text((new_x, y), line, font=font, fill="blue", align="left", spacing=10, multiline=True)
-
-#             # Update the y-coordinate for the next line
-#             y += font.getsize(line)[1]
-
-#         # text_box = (x, y, x + max_width, y + max_height) x,y,x_max,y_max
-#         if special_flag>0:
-#             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag],  width=6)
-#         else:
-#             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag])
-#         # draw.rectangle(text_box, outline="red")
-        
-#     else:
-
-#         # Calculate the position for the bottom-right corner of the rectangle
-#         rectangle_size = (x + text_size[0], y + text_size[1])
-
-#         # Calculate the new x-coordinate for the digitized text
-#         # new_x = annotated_image.width // 2 + x
-
-#         # Draw the red rectangle behind the text on the new image
-#         if special_flag:
-#             draw.rectangle([(new_x, y), (new_x + text_size[0], y_max + text_size[1])], outline=color_flag[special_flag],  width=6)
-#         else:
-#             draw.rectangle([(new_x, y), (new_x + text_size[0], y_max + text_size[1])], outline=color_flag[special_flag])
-
-#         # Draw the text on top of the red rectangle at the new position on the new image
-#         draw.text((new_x, y), text, font=font, fill="green", align="left", spacing=10, multiline=True)
-    
-#     return 0
 
 def plot_text_image(draw, annotated_image,bbox,digitized_text):
     # Create a new image with the same height as the original image and double the width
@@ -169,14 +83,6 @@ def plot_text_image(draw, annotated_image,bbox,digitized_text):
     
     text = digitized_text.decode('utf-8')
 
-    # Calculate the position for the top-left corner of the rectangle
-    # rectangle_position = (x, y)
-
-    # Calculate the size of the rectangle needed to fit the text
-    # text_size = draw.textsize(digitized_text)
-    # Get the bounding box for the text, which returns a tuple (left, top, right, bottom)   
-    # text_width, text_height = font.getsize(text)
-    # Get the bounding box for the text, which returns a tuple (left, top, right, bottom)
     tbox = draw.textbbox((0, 0), text, font=font)
 
     # Calculate the width and height
@@ -211,10 +117,6 @@ def plot_text_image(draw, annotated_image,bbox,digitized_text):
             wrapped_text = textwrap.wrap(text, width=int(0.15*(x_max-x)))
         except:
             wrapped_text = [text]
-    #     print(new_x)
-
-        # Draw the red rectangle behind the text on the new image
-        # draw.rectangle([(new_x, y), (new_x + text_size[0], y + text_size[1])])
 
         for line in wrapped_text:
             # Draw the line of text
@@ -228,15 +130,11 @@ def plot_text_image(draw, annotated_image,bbox,digitized_text):
             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag],  width=6)
         else:
             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag])
-        # draw.rectangle(text_box, outline="red")
         
     else:
 
         # Calculate the position for the bottom-right corner of the rectangle
         rectangle_size = (x + text_size[0], y + text_size[1])
-
-        # Calculate the new x-coordinate for the digitized text
-        # new_x = annotated_image.width // 2 + x
 
         # Draw the red rectangle behind the text on the new image
         if special_flag:
@@ -297,7 +195,7 @@ def get_ocr_output(image):
     scores = sum(scores)/len(tokens_with_confidence)
     del pixel_values, probabilities, logits, image
     return predicted_texts, spell_correction, scores, tokens_with_confidence
- 
+
 def get_ocr_output_v1(image):
     pixel_values = preprocess_image(image)
 
@@ -332,7 +230,7 @@ def get_ocr_output_v1(image):
     scores = sum(scores)/len(tokens_with_confidence)
     del pixel_values, probabilities, logits, image
     return predicted_texts, scores, tokens_with_confidence
- 
+
 #Load model
 model_name = "microsoft/trocr-large-handwritten"
 
@@ -344,12 +242,11 @@ model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
 model.config.pad_token_id = processor.tokenizer.pad_token_id
 model.config.vocab_size = model.config.decoder.vocab_size
 
-
 ocr_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
 ocr_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
 
 # Specify the path to the checkpoint file
-checkpoint_path = f"/home/gyanendro/Desktop/mm-ocr-update/fine-tunemodel/DR-Africa/TrOCR-GloSAT-DRAfrica-without-augmentation/combined_dataset_checkpoint_epoch_2.pth"
+checkpoint_path = f"{workdir}/TrOCR-GloSAT-DRAfrica-without-augmentation/combined_dataset_checkpoint_epoch_2.pth"
 
 # Load the checkpoint
 checkpoint = torch.load(checkpoint_path)

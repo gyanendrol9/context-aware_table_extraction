@@ -11,8 +11,10 @@ from os import path
 
 from PIL import Image, ImageDraw, ImageFont
 
+workdir = 'Tabular-Data-Extraction'
+
 import sys
-sys.path.append('/home/gyanendro/Desktop/mm-ocr-update/Tabular-data-extraction/docExtractor-master/src')
+sys.path.append(f'{workdir}/docExtractor-master/src')
 
 from utils.image import resize
 from utils.constant import LABEL_TO_COLOR_MAPPING
@@ -30,7 +32,7 @@ out_dir = sys.argv[2]
 font_size = 20
 font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf", size=font_size)
 
-dataset = 'Phillips'
+dataset = 'GloSAT'
 reconstruction_op = 'reconstruction_op'
 
 if not os.path.exists(out_dir):
@@ -49,20 +51,16 @@ if not os.path.exists(outpathIMG):
     os.mkdir(outpathIMG)
 
 op_path = f'{out_dir}/JSON-OCR'
-
-glosat_img_dir = '/home/gyanendro/Desktop/mm-ocr-update/data/merged_annotation_v3/Images' #"/home/gyanendro/Desktop/active_learning-2/dla_models/model_semi_supervised_fine_aclr_0/VOC2007/JPEGImages"
-dr_africa_img = '/home/gyanendro/Desktop/mm-ocr-update/data/African-American-France/Images'
-
 table_dir = f'{out_dir}/JSON-det'
-appen_table_dir = '/home/gyanendro/Desktop/mm-ocr-update/data/Table'
-maskpath = '/home/gyanendro/Desktop/active_learning-2/docExtractor_output/GloSAT-originalImage'
+
+appen_table_dir = 'data/Table'
+maskpath = 'docExtractor_output/originalImage'
 
 color_flag = {}
 color_flag[0] = (0, 0, 0)       # Black correct
 color_flag[1] =  (255, 5, 0)     # Red Not easy to transcribe 
 color_flag[2] = (255, 0, 255)   #Magenta Partial text
 color_flag[3] =  (128, 128, 0) #Yellow Blank
-
 
 
 if not os.path.exists(maskpath):
@@ -116,10 +114,6 @@ def find_text_region(img, label_idx_color_mapping, normalize):
 def find_closest_idx(xi,L):
     diffs = [abs(Li - xi) for Li in L]
     return diffs.index(sorted(diffs)[0])
-
-# def find_closest_idx(x,L):
-#     closest_index = min(range(len(L)), key=lambda i: abs(L[i] - x))
-#     return closest_index
 
 from textblob import TextBlob
 
@@ -698,18 +692,6 @@ for c, file in enumerate(files):
         print(f'Processing {file}.....{c}/{cfiles}...')
         filename = file.split('.')[0]
         img_dir = f'{image_source}/{filename}.jpg'
-        # if os.path.exists(f'{img_dir}'):
-        #     print(img_dir)
-        # img_dir = image_source
-        # if os.path.exists(f'{glosat_img_dir}/{filename}.jpg'):
-        #     img_dir = f'{glosat_img_dir}/{filename}.jpg'
-        #     dataset = 'GloSAT'
-        # elif os.path.exists(f'{dr_africa_img}/{filename}.jpg'):
-        #     img_dir = f'{dr_africa_img}/{filename}.jpg'
-        #     dataset = 'DRAfrica'
-        # else:
-        #     print(f'Error Cannot locate image: {filename}.jpg')
-            
             
         ann_jsonl = f"{op_path}/{filename}.json"
         print(f'load OCR output file: {ann_jsonl}')
@@ -717,7 +699,6 @@ for c, file in enumerate(files):
             data = json.load(json_file)
             tablez = data['tables']
             cellz = data['cell_texts']
-            # average_cordinates = data['average_coordinates']
 
         tables = sort_tables(tablez)
         #Load text area regions
@@ -754,9 +735,6 @@ for c, file in enumerate(files):
             else:
                 print(f'Error in finding table index for {file}!')
                 
-            
-            
-            
         average_cordinates = dict()
         for tid in table_cells:
             average_cordinates[tid] = find_average_cellsize(table_cells[tid])

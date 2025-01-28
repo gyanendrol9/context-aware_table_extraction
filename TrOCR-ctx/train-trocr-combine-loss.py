@@ -25,8 +25,8 @@ import os
 import json
 import jsonlines
 
-workdir = 'workdirpath'
-img_source = "data/glosat/"
+workdir = 'Tabular-Data-Extraction'
+img_source = f"{workdir}/data/glosat/"
 ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
 
 data_dict = []
@@ -181,9 +181,7 @@ if gpus > 1:# Check if PyTorch can access GPUs
 ocr_model.to(device)
 t5_model.to(device)
 
-
 max_input_length = 1200
-
 tot_epochs = 40
 for epoch in range(pre_epoch+1,tot_epochs):
     ocr_model.train()
