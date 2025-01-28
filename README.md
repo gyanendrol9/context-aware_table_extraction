@@ -50,7 +50,7 @@ This framework involves three main modules to digitize tabular data effectively:
 
 ## Features  
 - **Dataset:** UoS_Data_Rescue, a rich collection of historical tabular data.  
-- **Models:** Pre-trained TrOCR-ctx and ByT5 for OCR tasks.  
+- **Models:** Pre-trained TrOCR-ctx and [ByT5](https://huggingface.co/yelpfeast/byt5-base-english-ocr-correction) for OCR tasks.  
 - **Pipeline:** End-to-end OCR processing with real-time post-OCR correction.  
 
 ## Installation  
@@ -88,7 +88,7 @@ This framework involves three main components: **Table Structure Recognition (TS
     Details on the installation, configuration, and training of the TSR model using CascadeTabNet can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
 
     > Step 2: Train the Text Extraction Model (TrOCR-ctx)  
-    TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text.  
+    TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text. The TrOCR model and T5 model are trained jointly, with losses from both models contributing to the overall training objective. 
     - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
@@ -98,8 +98,6 @@ This framework involves three main components: **Table Structure Recognition (TS
         ```bash
         sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py
         ```
-
-
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
     - The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
