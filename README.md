@@ -89,11 +89,17 @@ This framework involves three main components: **Table Structure Recognition (TS
 
     > Step 2: Train the Text Extraction Model (TrOCR-ctx)  
     TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text.  
-    - **Training Instructions:**  
+    - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
         python train-trocr-combine-loss.py
         ```
+    - **Training Instructions on IRIDIS5/IRIDISX:**  
+        ```bash
+        sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py
+        ```
+
+
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
     - The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
