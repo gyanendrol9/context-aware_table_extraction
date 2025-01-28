@@ -1,44 +1,18 @@
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-
-from transformers import AutoTokenizer, AutoProcessor, AutoModelForTokenClassification
-
-from PIL import Image, ImageDraw, ImageFont
-
-def draw_bbox(image, bbox):
-    new_width = image.width
-    new_height = image.height
-    new_image = Image.new("RGB", (new_width, new_height), color="white")
-    new_image.paste(image, (0, 0))
-    draw = ImageDraw.Draw(new_image)
-    for box in bbox:
-        draw.rectangle([(box[0], box[1]), (box[2], box[3])], outline="red")
-    return new_image
+from transformers import AutoTokenizer
+from PIL import Image
 
 
 #Training case
 from transformers import (
-
-    TrOCRConfig,
-
     TrOCRProcessor,
-
-    TrOCRForCausalLM,
-
-    ViTConfig,
-
-    ViTModel,
-
-    VisionEncoderDecoderModel,
-    ViTFeatureExtractor,
-
+    VisionEncoderDecoderModel
 )
 
 import torch
 import torch.nn as nn
 
 from torch.utils.data import Dataset
-
-# import nlpaug.augmenter.char as nac
 from transformers import T5ForConditionalGeneration, AutoTokenizer
 from torch.optim import Adam
 from torch.nn.utils.rnn import pad_sequence
@@ -47,16 +21,48 @@ from torch.nn.utils.rnn import pad_sequence
 import os
 import pickle as pkl
 
-print('Loading training data')
-f = open('/scratch/gsl1r22/TDR/data/dr_africa_train_data_dict_new.pkl','rb')
-dr_africa_cells_complete = pkl.load(f)
-f.close()
+import os
+import json
+import jsonlines
 
-# f = open('/scratch/gsl1r22/GloSAT/text-recognition/data/pickle_data-iridis/glosat_train_data_dict.pkl','rb')
-# glosat_cells_complete = pkl.load(f)
-# f.close()
+workdir = 'workdirpath'
+img_source = "data/glosat/"
+ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
 
-outdir = '/scratch/gsl1r22/TDR/finetuned_model/TrOCR-GloSAT-DRAfrica-without-augmentation'
+data_dict = []
+with jsonlines.open(ann_jsonl) as f:
+    for line in f.iter():
+        for annotation in line['data_list']:
+            img_path = os.path.join(img_source, annotation['img_path'])
+            text = []
+            for txt in annotation['instances']:
+                label = txt['text']
+                if label != '@@@' or label != '$$$' or label != '###':
+                    text.append(label)
+                else:
+                    print(annotation)
+            data_dict.append(dict(img=img_path, text='\n'.join(text)))
+train_data_dict = data_dict
+
+
+ann_jsonl = f"{img_source}/textrecog_val.json" # This dataset also contain the neighbour cells information added for each target cell to train.
+
+data_dict = []
+with jsonlines.open(ann_jsonl) as f:
+    for line in f.iter():
+        for annotation in line['data_list']:
+            img_path = os.path.join(img_source, annotation['img_path'])
+            text = []
+            for txt in annotation['instances']:
+                label = txt['text']
+                if label != '@@@' or label != '$$$' or label != '###':
+                    text.append(label)
+                else:
+                    print(annotation)
+            data_dict.append(dict(img=img_path, text='\n'.join(text)))
+val_data_dict = data_dict
+
+outdir = f"{workdir}/TrOCR-GloSAT-DRAfrica"
 if not os.path.exists(outdir):
     os.mkdir(outdir)
     
@@ -106,33 +112,25 @@ def calculate_average_image_size(image_paths):
 
     return avg_width, avg_height
 
-image_paths = [id['img'] for id in dr_africa_cells_complete]
-texts = [id['text'] for id in dr_africa_cells_complete]
-word_len = [len(id['text'].split()) for id in dr_africa_cells_complete]
-
-del dr_africa_cells_complete
-
-# image_paths = [id['img'] for id in dr_africa_cells_complete+glosat_cells_complete]
-# texts = [id['text'] for id in dr_africa_cells_complete+glosat_cells_complete]
-# word_len = [len(id['text'].split()) for id in dr_africa_cells_complete+glosat_cells_complete]
-# del dr_africa_cells_complete, glosat_cells_complete
+image_paths = [id['img'] for id in train_data_dict+val_data_dict]
+texts = [id['text'] for id in train_data_dict+val_data_dict]
+word_len = [len(id['text'].split()) for id in train_data_dict+val_data_dict]
 
 average_size = (120, 80)
 max_len = 190
 batch_size = 32
 
 print(f'Loading pretrained models')
-cache_dir = "/scratch/gsl1r22/TDR/pretrained_model/"
+cache_dir = "pretrained_model/"
 
-model_name = '/scratch/gsl1r22/TDR/pretrained_model/models--microsoft--trocr-large-handwritten/snapshots/e68501f437cd2587ae5d68ee457964cac824ddee'
-# model_name = "microsoft/trocr-large-handwritten"
+ocr_model_name = "microsoft/trocr-large-handwritten"
 
-processor = TrOCRProcessor.from_pretrained(model_name, cache_dir=cache_dir)
-model = VisionEncoderDecoderModel.from_pretrained(model_name, cache_dir=cache_dir)
+processor = TrOCRProcessor.from_pretrained(ocr_model_name, cache_dir=cache_dir)
+ocr_model = VisionEncoderDecoderModel.from_pretrained(ocr_model_name, cache_dir=cache_dir)
 
-model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
-model.config.pad_token_id = processor.tokenizer.pad_token_id
-model.config.vocab_size = model.config.decoder.vocab_size
+ocr_model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
+ocr_model.config.pad_token_id = processor.tokenizer.pad_token_id
+ocr_model.config.vocab_size = ocr_model.config.decoder.vocab_size
 
 train_dataset = MyTrainDataset(image_paths, texts, processor, max_len, image_size=average_size)
 # train_dataset = MyTrainDataset(image_paths, texts, processor, max_len)
@@ -140,16 +138,15 @@ train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_s
 
 del train_dataset
 
-ocr_model_name = '/scratch/gsl1r22/TDR/pretrained_model/models--yelpfeast--byt5-base-english-ocr-correction/snapshots/19d5c2fd86b87f0a0febb7d2574878a0d68d5294'
-ocr_model = T5ForConditionalGeneration.from_pretrained(ocr_model_name, cache_dir=cache_dir)
-ocr_tokenizer = AutoTokenizer.from_pretrained(ocr_model_name, cache_dir=cache_dir)
-# ocr_model.to(device)
+t5_model_name = 'yelpfeast/byt5-base-english-ocr-correction'
 
-optimizer = Adam(model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
+t5_model = T5ForConditionalGeneration.from_pretrained(t5_model_name, cache_dir=cache_dir)
+ocr_tokenizer = AutoTokenizer.from_pretrained(t5_model_name, cache_dir=cache_dir)
+
+optimizer = Adam(ocr_model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
 loss_function = nn.CrossEntropyLoss()  # Define the appropriate loss function for your OCR task
 
-checkpoint_path = f"/scratch/gsl1r22/TDR/finetuned_model/TrOCR-GloSAT-DRAfrica-without-augmentation/combined_dataset_sep-loss_epoch_14.pth"
-# checkpoint_path = f"/scratch/gsl1r22/GloSAT/text-recognition/finetuned_model/TrOCR-GloSAT-DRAfrica-without-augmentation/combined_dataset_checkpoint_epoch_0.pth"
+checkpoint_path = f"{outdir}/pretrained_previous_checkpoint.pth"
 print(f'Loading checkpoint {checkpoint_path}')
 
 if os.path.exists(checkpoint_path):
@@ -164,32 +161,32 @@ if os.path.exists(checkpoint_path):
         new_state_dict[new_key] = value
 
     # Load the new_state_dict into the model
-    model.load_state_dict(new_state_dict)
+    ocr_model.load_state_dict(new_state_dict)
 
     # Load the ocr model's state dictionary from the checkpoint
-    # ocr_model.load_state_dict(checkpoint['ocr_state_dict'])
     pre_epoch = checkpoint['epoch']
+    del checkpoint
 else:
     pre_epoch = 0
- 
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Use DataParallel to utilize multiple GPUs
 gpus = torch.cuda.device_count()
 if gpus > 1:# Check if PyTorch can access GPUs
     print(f"Number of GPUs available: {gpus}")
-    model = torch.nn.DataParallel(model)
     ocr_model = torch.nn.DataParallel(ocr_model)
+    t5_model = torch.nn.DataParallel(t5_model)
 
-model.to(device)
 ocr_model.to(device)
+t5_model.to(device)
 
-del checkpoint
+
 max_input_length = 1200
 
 tot_epochs = 40
 for epoch in range(pre_epoch+1,tot_epochs):
-    model.train()
+    ocr_model.train()
     total_loss = 0
 
     print(f"Starting training epoch: {epoch+1}")
@@ -198,10 +195,10 @@ for epoch in range(pre_epoch+1,tot_epochs):
         optimizer.zero_grad()
         images = batch["pixel_values"].to(device)
         labels = batch["texts_ids"].squeeze(1).long().to(device)
-        outputs = model(pixel_values= images, labels=labels)
+        outputs = ocr_model(pixel_values= images, labels=labels)
         l1 = outputs.loss.mean()  # Make sure l1 is a scalar
         
-        generated_ids = model.module.generate(images)
+        generated_ids = ocr_model.module.generate(images)
         label_tokens = processor.batch_decode(labels, skip_special_tokens=True)
         generated_tokens = processor.batch_decode(generated_ids, skip_special_tokens=True)
         
@@ -211,13 +208,13 @@ for epoch in range(pre_epoch+1,tot_epochs):
         label_tensor_list = [torch.tensor(list(text.encode("utf-8"))) for text in label_tokens]
         label_padded_tensors = pad_sequence([torch.cat((tensor, torch.zeros(max_input_length - len(tensor)))) for tensor in label_tensor_list], batch_first=True)
         
-        loss = ocr_model(padded_tensors.long().to(device), labels=label_padded_tensors.long().to(device)).loss.mean()   # forward pass
+        loss = t5_model(padded_tensors.long().to(device), labels=label_padded_tensors.long().to(device)).loss.mean()   # forward pass
         avg_loss = 0.5*(loss+l1)
         
         # First, backpropagate TrOCR loss
         l1.backward(retain_graph=True)  # retain the graph to allow backprop for the second model
 
-        # Then, backpropagate the ByT5 (ocr_model) loss
+        # Then, backpropagate the ByT5 (t5_model) loss
         loss.backward()
 
         # avg_loss.backward()
@@ -233,9 +230,9 @@ for epoch in range(pre_epoch+1,tot_epochs):
     # Save model checkpoint
     checkpoint = {
         'epoch': epoch,
-        'model_state_dict': model.state_dict(),
+        'model_state_dict': ocr_model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'ocr_model_state_dict': ocr_model.state_dict()        # Add any other information you want to save
+        't5_model_state_dict': t5_model.state_dict()        # Add any other information you want to save
     }
     torch.save(checkpoint, f'{outdir}/combined_dataset_sep-loss_epoch_{epoch}.pth')
     print(f'Checkpoint saved: {outdir}/combined_dataset_sep-loss_epoch_{epoch}.pth')
