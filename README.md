@@ -25,7 +25,7 @@ This framework involves three main modules to digitize tabular data effectively:
     - **Model Used:** [CascadeTabNet](https://github.com/DevashishPrasad/CascadeTabNet), a state-of-the-art model for table structure recognition.  
     - **Prerequisites:**  
         > - Python 3.7  
-        > - Dependencies specific to CascadeTabNet (e.g., TensorFlow, OpenCV, etc.).  
+        > - Dependencies specific to CascadeTabNet (e.g., Torch, MMCV, etc.).  
             - Detailed installation, configuration, and training instructions for the TSR module can be found [here](https://github.com/stuartemiddleton/glosat_table_dataset).  
         > - YAML file for setting up the environment is provided [here](environment/open-mmlab.yml). Update the environment using the provided YAML file:
         ```bash  
