@@ -91,11 +91,11 @@ This framework involves three main components: **Table Structure Recognition (TS
     - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
-        python train-trocr-combine-loss.py
+        python train-trocr-combine-loss.py <image_source_dir> <output_dir>
         ```
-    - **Training Instructions on IRIDIS5/IRIDISX:**  
+    - **Training Instructions on IRIDIS 5/IRIDIS X:**  
         ```bash
-        sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py
+        sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py <image_source_dir> <output_dir>
         ```
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
@@ -103,7 +103,7 @@ This framework involves three main components: **Table Structure Recognition (TS
     - A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
     - To execute the reconstruction step, run the following command:
         ```bash 
-        python reconstruction_v3-folder.py <image folder path> <output folder path>
+        python reconstruction_v3-folder.py <image_source_dir> <output_dir>
         ```  
 
     Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.

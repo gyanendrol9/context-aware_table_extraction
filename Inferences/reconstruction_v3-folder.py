@@ -11,10 +11,8 @@ from os import path
 
 from PIL import Image, ImageDraw, ImageFont
 
-workdir = 'Tabular-Data-Extraction'
-
 import sys
-sys.path.append(f'{workdir}/docExtractor-master/src')
+sys.path.append('Tabular-Data-Extraction/docExtractor-master/src') # docExtractor directory
 
 from utils.image import resize
 from utils.constant import LABEL_TO_COLOR_MAPPING
@@ -172,8 +170,7 @@ def evaluate_TDE(pd_cells, gt_cells):
             pdcell, ptext = pd_cells[pcell]
             if is_overlapped([gcell[:4]], pdcell[:4], pc=0.5):
                 matched+=1
-                # if matched>1:
-                #     print(gcell, pdcell, text, ptext, matched)
+                
         if matched == 0:
             not_overlapped_gt.append(cell)
             
@@ -211,7 +208,6 @@ def evaluate_TDE(pd_cells, gt_cells):
                 ground_truths.append(text)
                 output_pred.append(ptext)
                 
-                # print('Overlapped', text, text_info[0])
                 text = text.replace("\n", "\\n")
                 gt_text_all+=f'{text}\t'
                 pd_text_all+=f'{ptext}\t'
@@ -230,7 +226,6 @@ def evaluate_TDE(pd_cells, gt_cells):
                 ptext = re.sub(r'\.{2,}', '.', ptext)
                 cer = jiwer.cer(text, ptext)
                 cer_scores.append(cer)
-                # print(f'CER score({text},{ptext}): {cer}')
                 
                 if cer>0.3:
                     # Calculate WER
@@ -241,15 +236,11 @@ def evaluate_TDE(pd_cells, gt_cells):
                 wer_scores.append(wer)
             
                 matched+=1
-                # if matched>1:
-                # print(gcell, pdcell, text, ptext, matched)
                 gt_text_all+=f'{text}, '
                 pd_text_all+=f'{ptext}, '
                 
         if matched == 0:
             not_overlapped_pd.append(cell)
-            # gt_text_all+=f'{text}\t'
-            # pd_text_all+=f'\t'
             
     precicion= (len(pd_cells)-len(not_overlapped_pd))/len(pd_cells)
 
@@ -398,8 +389,6 @@ def remove_small_coordinates(x_coords, cell_size_min):
             pc2 = abs(i-new_x_coords[-1]) # Check boundary initial 
             pc3 = abs(j-new_x_coords[-1]) # Check boundary later
             
-#             print(new_x_coords, small_coords, '\n',new_x_coords[-1], i, pc2, cell_size_min, '\n', i, j, pc, cell_size_min, '\n')
-            
             if pc2 > cell_size_min and len(small_coords)==0: # Check boundary initial okay?
                 new_x_coords.append(i)
                     
@@ -525,8 +514,6 @@ def classify_cells(cells, mask, average_coordinates,pc=0.8):
         imagedraw = cells[idx][0:4]
         tid = cells[idx][4]
         imagedraw = list(map(int, imagedraw))
-
-        x_avg,y_avg = average_coordinates[tid]
         
         if check_cell(imagedraw+[tid],average_coordinates,pc):
 
@@ -544,8 +531,6 @@ def classify_cells(cells, mask, average_coordinates,pc=0.8):
                 exclude_cells_new.append(cells[idx])
         else:
             exclude_cells_new.append(imagedraw+[idx])
-        # except:
-        #     exclude_cells_new.append(cells[idx])
 
     return corrected_cells_new, blank_cells_new, exclude_cells_new
 
@@ -621,11 +606,6 @@ def plot_text_image(draw, annotated_image,bbox,digitized_text):
             wrapped_text = textwrap.wrap(text, width=int(0.15*(x_max-x)))
         except:
             wrapped_text = text
-    #     print(new_x)
-
-        # Draw the red rectangle behind the text on the new image
-        # draw.rectangle([(new_x, y), (new_x + text_size[0], y + text_size[1])])
-
 
         for line in wrapped_text:
             # Draw the line of text
@@ -639,15 +619,11 @@ def plot_text_image(draw, annotated_image,bbox,digitized_text):
             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag],  width=6)
         else:
             draw.rectangle([(new_x, y0), (new_x + text_size[0], y + text_size[1])], outline=color_flag[special_flag])
-        # draw.rectangle(text_box, outline="red")
         
     else:
 
         # Calculate the position for the bottom-right corner of the rectangle
         rectangle_size = (x + text_size[0], y + text_size[1])
-
-        # Calculate the new x-coordinate for the digitized text
-        # new_x = annotated_image.width // 2 + x
 
         # Draw the red rectangle behind the text on the new image
         if special_flag:

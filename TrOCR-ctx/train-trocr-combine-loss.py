@@ -24,11 +24,18 @@ import pickle as pkl
 import os
 import json
 import jsonlines
+import sys
 
-workdir = 'Tabular-Data-Extraction'
-img_source = f"{workdir}/data/glosat/"
+cache_dir = "pretrained_model" #cache dir pretrained models
+
+img_source = sys.argv[1]
+
 ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
 
+outdir = sys.argv[2]
+if not os.path.exists(outdir):
+    os.mkdir(outdir)
+    
 data_dict = []
 with jsonlines.open(ann_jsonl) as f:
     for line in f.iter():
@@ -62,10 +69,6 @@ with jsonlines.open(ann_jsonl) as f:
             data_dict.append(dict(img=img_path, text='\n'.join(text)))
 val_data_dict = data_dict
 
-outdir = f"{workdir}/TrOCR-GloSAT-DRAfrica"
-if not os.path.exists(outdir):
-    os.mkdir(outdir)
-    
 class MyTrainDataset(Dataset):
     def __init__(self, images, texts, processor, max_len, image_size=(224, 224)):
         self.images = images
@@ -119,9 +122,6 @@ word_len = [len(id['text'].split()) for id in train_data_dict+val_data_dict]
 average_size = (120, 80)
 max_len = 190
 batch_size = 32
-
-print(f'Loading pretrained models')
-cache_dir = "pretrained_model/"
 
 ocr_model_name = "microsoft/trocr-large-handwritten"
 

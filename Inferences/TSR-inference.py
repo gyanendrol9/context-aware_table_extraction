@@ -18,40 +18,21 @@ from utils import coerce_to_path_and_check_exist
 from utils.path import MODELS_PATH
 from utils.constant import MODEL_FILE
 
-import cv2
 import cv2 as cv
 import pickle as pkl
 
-import imutils
-
-from os import path
-
-
-import matplotlib.pyplot as plt
-import pickle
 import torchvision.transforms.functional as F
 import copy
-# Add code to sys.path
-import matplotlib.pyplot as plt 
-
-
 import json
 
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
-import mmcv
-
 import collections
 
 import dla.src.table_structure_analysis as tsa
 import dla.src.xml_utils as xml_utils
-from dla.src.image_utils import put_box, put_line
-
-
+from dla.src.image_utils import put_box
 
 from statistics import mean
-
-import importlib
-import glosat_utils
 
 from glosat_utils import *
 
@@ -673,7 +654,7 @@ def merge_neighbour_rows(x_cords, cells_idx, average_cordinates, pc = 0.01):
                 merged_cells.append(ncell)
                 merged_cells.append(boxi)
     return merged_cells
- 
+
 if not os.path.exists(f'{outpathJSON}/{filename}.json'):
 # if True:
     model = init_detector(config_file, table_checkpoint_file, device='cuda:0')
@@ -749,7 +730,6 @@ if not os.path.exists(f'{outpathJSON}/{filename}.json'):
     cells_by_image = collections.defaultdict(list)
     for aclr in reversed(range(int(num_aclr)-2,int(num_aclr)+1)): 
         cell_checkpoint_file = f'{cell_checkpoint_file_dir}/aclr{aclr}.pth'
-        # cell_checkpoint_file = f'{cell_checkpoint_file_dir}/best_epoch_200.pth'
         cell_model = init_detector(config_file, cell_checkpoint_file, device='cuda:0')
         cells_by_image[aclr] = detect_cell_pretrained(cell_model,img)
 
@@ -803,7 +783,6 @@ if not os.path.exists(f'{outpathJSON}/{filename}.json'):
         else:
             not_overlapped.append(cell)
 
-    # not_overlapped_1, overlapped_header, large_cell, missed = find_overlapped_cell_final_v2(headers, not_overlapped, average_cordinates,pc=0.3)
     not_overlapped_1 = []
     overlapped_header = []
     for cell in not_overlapped:
