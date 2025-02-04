@@ -9,8 +9,8 @@ reconstruction_code_loc=/home/gyanendro/Desktop/mm-ocr-update/Tabular-data-extra
 
 #Input output parameter
 img_folder_path=$1
-aclr=$2
-outdirectory=$3
+aclr=12
+outdirectory=$2
 
 mkdir $outdirectory
 
@@ -21,21 +21,21 @@ echo $files
 for file in $files; do
     echo "TSR for image "$file
     echo ""
-    $python_det_env $detection_code_loc $file $2 $3
+    $python_det_env $detection_code_loc $file $aclr $outdirectory
 done
 
 echo ''
 echo "************************** Table structure recognition ended ************************** "
 echo ''
 
-# echo "************************** OCR Text extraction begin ************************** "
-# $python_ocr_env $ocr_code_loc $1 $3
-# echo "************************** OCR Text extraction ended ************************** "
-# echo ''
+echo "************************** OCR Text extraction begin ************************** "
+$python_ocr_env $ocr_code_loc $img_folder_path $outdirectory
+echo "************************** OCR Text extraction ended ************************** "
+echo ''
 
 
-# echo "************************** Table reconstruction begin ************************** "
-# $python_det_env $reconstruction_code_loc $1 $3
-# echo "************************** Table reconstruction ended ************************** "
-# echo ''
+echo "************************** Table reconstruction begin ************************** "
+$python_det_env $reconstruction_code_loc $img_folder_path $outdirectory
+echo "************************** Table reconstruction ended ************************** "
+echo ''
 

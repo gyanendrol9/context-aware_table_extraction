@@ -84,7 +84,7 @@ This framework involves three main components: **Table Structure Recognition (TS
 - Pipeline Integration  
     > Step 1: Train the TSR Model  
     Table Structure Recognition (TSR) identifies and reconstructs the table layout, including table boundaries, cell boundaries, and relationships between rows and columns.  
-    - To train the TSR model, **complete all the steps provided** in the [glosat_table_dataset repository](https://github.com/stuartemiddleton/glosat_table_dataset). 
+    - To train the TSR model, **complete all the steps provided** in the [glosat_table_dataset](https://github.com/stuartemiddleton/glosat_table_dataset) repository. 
 
     > Step 2: Train the Text Extraction Model (TrOCR-ctx)  
     TrOCR-ctx (Transformer-based OCR with context-aware embeddings) extracts text from cells identified by the TSR module. This step reduces cascading errors and improves text recognition accuracy, especially for handwritten or degraded text. The [TrOCR](https://huggingface.co/docs/transformers/en/model_doc/trocr) and [ByT5](https://huggingface.co/yelpfeast/byt5-base-english-ocr-correction) models are trained jointly, with losses from both models contributing to the overall training objective. 
@@ -103,7 +103,7 @@ This framework involves three main components: **Table Structure Recognition (TS
     - A heuristic-based approach is used for this alignment, leveraging the coordinates of table cells and the extracted text. The reconstructed tabular data is then output in structured formats such as CSV or JSON.
     - To execute the reconstruction step, run the following command:
         ```bash 
-        python reconstruction_v3-folder.py
+        python reconstruction_v3-folder.py <image folder path> <output folder path>
         ```  
 
     Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
