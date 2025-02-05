@@ -145,8 +145,7 @@ Evaluate the model performance on a test set:
     python TDE-evaluation-v2.py
     ```
 
-7. Complete pipeline for Inference
-To digitize new tabular records, the pipeline combines the three modules into a single workflow. The pipeline takes a folder of input images and processes them to generate structured tabular data in a desire folder. Use the provided script to process the images and generate structured output.
+7. To digitize new tabular records, the pipeline combines the three modules into a single workflow. The pipeline takes a folder of input images and processes them to generate structured tabular data in a desire folder. Use the provided script to process the images and generate structured output.
     ```bash
     bash text-extraction-pipeline-folder-input.sh <image_source_dir> <output_dir>
     ```
