@@ -104,6 +104,7 @@ This framework involves three main components:
     - **Table Structure Recognition (TSR)**, 
     - **Text Extraction (TrOCR-ctx)**, and 
     - **Tabular Data Reconstruction**. 
+    
     Each step is trained separately to ensure high performance across the pipeline.
 
 - Pipeline Integration  
