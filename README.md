@@ -123,6 +123,10 @@ This framework involves three main components:
         ```bash
         sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py <image_source_dir> <output_dir>
         ```
+    - **Text extraction:**  
+        ```bash
+        python text_extraction-folder_v2.py <image_source_dir> <output_dir>
+        ```
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
     - The final step in the pipeline involves reconstructing the tabular data by aligning the text extracted by the TrOCR-ctx model with the table structure detected by the TSR module. This process ensures that the reconstructed data preserves the original table's layout and logical relationships.
@@ -141,8 +145,8 @@ Evaluate the model performance on a test set:
     python TDE-evaluation-v2.py
     ```
 
-7. Perform Inference
-Digitize new tabular records:
+7. Complete pipeline for Inference
+To digitize new tabular records, the pipeline combines the three modules into a single workflow. The pipeline takes a folder of input images and processes them to generate structured tabular data in a desire folder. Use the provided script to process the images and generate structured output.
     ```bash
     bash text-extraction-pipeline-folder-input.sh <image_source_dir> <output_dir>
     ```
