@@ -83,21 +83,21 @@ This framework involves three main modules to digitize tabular data effectively:
         > **`img_path`**: A string representing the file path to the image.
 
         > **`instances`**: A list of dictionaries, where each dictionary contains a `text` field with the text associated with the image.
-        
+
     - JSON Structure Example
-    ```json
-    {
-    "img_path": "path/to/image.jpg",
-    "instances": [
+        ```json
         {
-        "text": "This is an example text associated with the image."
-        },
-        {
-        "text": "Another text instance related to the same image."
+        "img_path": "path/to/image.jpg",
+        "instances": [
+            {
+            "text": "This is an example text associated with the image."
+            },
+            {
+            "text": "Another text instance related to the same image."
+            }
+        ]
         }
-    ]
-    }
-    ```
+        ```
 
 5. Train the Model  
 This framework involves three main components: **Table Structure Recognition (TSR)**, **Text Extraction (TrOCR-ctx)**, and **Tabular Data Reconstruction**. Each step is trained separately to ensure high performance across the pipeline.
