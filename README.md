@@ -77,6 +77,9 @@ This framework involves three main modules to digitize tabular data effectively:
 4. Dataset Setup:
     The dataset is hosted on Zenodo. Download the dataset and extract it to the data directory:
     [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
+    ```bash
+    bash text-extraction-pipeline-folder-input.sh  
+    ```
 
 5. Train the Model  
 This framework involves three main components: **Table Structure Recognition (TSR)**, **Text Extraction (TrOCR-ctx)**, and **Tabular Data Reconstruction**. Each step is trained separately to ensure high performance across the pipeline.
@@ -111,14 +114,14 @@ This framework involves three main components: **Table Structure Recognition (TS
 6. Evaluate the Model
 Evaluate the model performance on a test set:
     ```bash 
-    python testing-finetuned-TrOCR.py  
+    python testing-finetuned-TrOCR.py <image_source_dir> <output_dir>  
     python TDE-evaluation-v2.py
     ```
 
 7. Perform Inference
 Digitize new tabular records:
     ```bash
-    bash text-extraction-pipeline-folder-input.sh  
+    bash text-extraction-pipeline-folder-input.sh <image_source_dir> <output_dir>
     ```
 
 ### Results:

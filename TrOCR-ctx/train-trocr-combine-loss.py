@@ -29,13 +29,13 @@ import sys
 cache_dir = "pretrained_model" #cache dir pretrained models
 
 img_source = sys.argv[1]
-
-ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
-
 outdir = sys.argv[2]
+
 if not os.path.exists(outdir):
     os.mkdir(outdir)
     
+ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
+
 data_dict = []
 with jsonlines.open(ann_jsonl) as f:
     for line in f.iter():

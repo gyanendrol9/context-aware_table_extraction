@@ -18,7 +18,7 @@ echo 'Training started for' $1
 
 python3 cuda_check.py 
 
-python3 $1
+python3 $1 $2 $3
 
 echo 'Training completed'
 

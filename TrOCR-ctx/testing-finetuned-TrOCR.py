@@ -17,9 +17,8 @@ import json
 import jsonlines
 import sys
 
-
-workdir = 'Text-recognition/'
-img_source = f"{workdir}/data/glosat/"
+img_source = sys.argv[1]
+workdir = sys.argv[2]
 
 model_name = "microsoft/trocr-large-handwritten"
 
