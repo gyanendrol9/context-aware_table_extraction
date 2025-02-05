@@ -83,18 +83,18 @@ This framework involves three main modules to digitize tabular data effectively:
         > img_path: The file path to the image associated with the data.
         > instances: A list of dictionaries, each containing a text field that represents the text associated with the image.
 
-    ```bash
+    ```json
     {
-  "img_path": "path/to/image.jpg",
-  "instances": [
-    {
-      "text": "This is an example text associated with the image."
-    },
-    {
-      "text": "Another text instance related to the same image."
+    "img_path": "path/to/image.jpg",
+    "instances": [
+        {
+        "text": "This is an example text associated with the image."
+        },
+        {
+        "text": "Another text instance related to the same image."
+        }
+    ]
     }
-  ]
-}
     ```
 
 5. Train the Model  
