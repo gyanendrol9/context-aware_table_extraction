@@ -138,8 +138,7 @@ This framework involves three main components:
 
     Once trained, these components can be seamlessly integrated to provide an end-to-end solution for digitizing historical tabular data.
 
-6. Evaluate the Model
-Evaluate the model performance on a test set:
+6. Evaluate the TrOCR model performance on the test set:
     ```bash 
     python testing-finetuned-TrOCR.py <image_source_dir> <output_dir>  
     python TDE-evaluation-v2.py
