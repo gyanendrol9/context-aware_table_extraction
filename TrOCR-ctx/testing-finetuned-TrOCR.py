@@ -104,21 +104,9 @@ out_dir = f'{workdir}/TR-OCR-drafrica-result'
 if not os.path.exists(out_dir):
     os.mkdir(out_dir)
 
-ann_jsonl = f"{img_source}/textrecog_test.json"
-
-data_dict = []
+ann_jsonl = f"{img_source}/textrecog_test_clean.json" # This dataset also contain the neighbour cell information added for each target cell to test.
 with open(ann_jsonl, 'r') as json_file:
-    line = json.load(json_file)
-    for annotation in line['data_list']:
-        img_path = os.path.join(img_source, annotation['img_path'])
-        text = []
-        for txt in annotation['instances']:
-            label = txt['text']
-            if label != '@@@' or label != '$$$' or label != '###':
-                text.append(label)
-            else:
-                print(annotation)
-        data_dict.append(dict(img=img_path, text='\n'.join(text)))
+    data_dict = json.load(json_file)
 test_data_dict = data_dict
 
 image_paths = [id['img'] for id in test_data_dict]
