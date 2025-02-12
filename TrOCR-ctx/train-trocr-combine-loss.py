@@ -34,39 +34,15 @@ outdir = sys.argv[2]
 if not os.path.exists(outdir):
     os.mkdir(outdir)
     
-ann_jsonl = f"{img_source}/textrecog_train.json" # This dataset also contain the neighbour cell information added for each target cell to train.
-
-data_dict = []
-with jsonlines.open(ann_jsonl) as f:
-    for line in f.iter():
-        for annotation in line['data_list']:
-            img_path = os.path.join(img_source, annotation['img_path'])
-            text = []
-            for txt in annotation['instances']:
-                label = txt['text']
-                if label != '@@@' or label != '$$$' or label != '###':
-                    text.append(label)
-                else:
-                    print(annotation)
-            data_dict.append(dict(img=img_path, text='\n'.join(text)))
+ann_jsonl = f"{img_source}/textrecog_train_clean.json" # This dataset also contain the neighbour cell information added for each target cell to train.
+with open(ann_jsonl, 'r') as json_file:
+    data_dict = json.load(json_file)
 train_data_dict = data_dict
 
 
-ann_jsonl = f"{img_source}/textrecog_val.json" # This dataset also contain the neighbour cells information added for each target cell to train.
-
-data_dict = []
-with jsonlines.open(ann_jsonl) as f:
-    for line in f.iter():
-        for annotation in line['data_list']:
-            img_path = os.path.join(img_source, annotation['img_path'])
-            text = []
-            for txt in annotation['instances']:
-                label = txt['text']
-                if label != '@@@' or label != '$$$' or label != '###':
-                    text.append(label)
-                else:
-                    print(annotation)
-            data_dict.append(dict(img=img_path, text='\n'.join(text)))
+ann_jsonl = f"{img_source}/textrecog_val_clean.json" # This dataset also contain the neighbour cells information added for each target cell to train.
+with open(ann_jsonl, 'r') as json_file:
+    data_dict = json.load(json_file)
 val_data_dict = data_dict
 
 class MyTrainDataset(Dataset):
