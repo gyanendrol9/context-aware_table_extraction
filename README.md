@@ -82,21 +82,20 @@ This framework involves three main modules to digitize tabular data effectively:
     The dataset is organized in a JSON format, where each entry contains the following fields:
         > **`img_path`**: A string representing the file path to the image.
 
-        > **`instances`**: A list of dictionaries, where each dictionary contains a `text` field with the text associated with the image.
+        > **`text`**: A string representing the text associated with the image.
 
     - JSON Structure Example
         ```json
-        {
-        "img_path": "path/to/image.jpg",
-        "instances": [
+        [
             {
-            "text": "This is an example text associated with the image."
-            },
+                "img_path": "path/to/image1.jpg",
+                "text": "This is an example text associated with the image1.jpg."
+            }
             {
-            "text": "Another text instance related to the same image."
+                "img_path": "path/to/image2.jpg",
+                "text": "This is an example text associated with the image2.jpg."
             }
         ]
-        }
         ```
 
 5. Train the Model  
