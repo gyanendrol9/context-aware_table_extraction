@@ -43,13 +43,15 @@ import random
 import os
 import json
 import jsonlines
+import sys
 
 data_dict = []
 glosat_data_dict = []
 
-work_dir = '/home/gyanendro/Desktop/mm-ocr-update/data/'
-outJSON = f'{work_dir}/Augmented-JSON'
+work_dir = sys.argv[1]
+out_dir = sys.argv[2]
 
+outJSON = f'{work_dir}/Augmented-JSON'
 files = os.listdir(f'{work_dir}/Images')
 
 with open(f"{work_dir}/completed_annotated_dataset.json", 'r') as json_file:
@@ -94,10 +96,8 @@ for c, file in enumerate(files):
             file = img_path.split('/')[-1]
             box = data['cell']
             text_info = data['text']
-            if os.path.exists(f'{work_dir}/Images/{file}'):
-                img_dir = f'{work_dir}/Images/{file}'
-            else:
-                img_dir = f'{dr_africa_dir}/Images/{file}'
+
+            img_dir = f'{work_dir}/{img_path}'
            
             augmented_cells = augmented_cells_c['augmented_cells']
             
@@ -177,7 +177,7 @@ del train_dataset
 
 print(f'Loading pretrained models')
 
-cache_dir = "/home/gyanendro/.cache/huggingface/hub/"
+# cache_dir = "~/.cache/huggingface/hub/"
 model_name = "microsoft/trocr-large-handwritten"
 
 processor = TrOCRProcessor.from_pretrained(model_name, cache_dir=cache_dir)
@@ -190,9 +190,9 @@ model.config.vocab_size = model.config.decoder.vocab_size
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-ocr_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
-ocr_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
-ocr_model.to(device)
+t5_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
+t5_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
+t5_model.to(device)
 
 optimizer = Adam(model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
 loss_function = nn.CrossEntropyLoss()  # Define the appropriate loss function for your OCR task
@@ -222,7 +222,7 @@ for epoch in range(tot_epochs):
         label_tensor_list = [torch.tensor(list(text.encode("utf-8"))) for text in label_tokens]
         label_padded_tensors = pad_sequence([torch.cat((tensor, torch.zeros(max_input_length - len(tensor)))) for tensor in label_tensor_list], batch_first=True)
         
-        loss = ocr_model(padded_tensors.long().to(device), labels=label_padded_tensors.long().to(device)).loss # forward pass
+        loss = t5_model(padded_tensors.long().to(device), labels=label_padded_tensors.long().to(device)).loss # forward pass
         print(f"Batch: {batch_num + 1} Epoch:{epoch}/{tot_epochs} Loss: {loss}", end='\r')
 
         total_loss += loss.item()
@@ -236,11 +236,11 @@ for epoch in range(tot_epochs):
             'epoch': epoch,
             'ocr_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
-            't5_state_dict': ocr_model.state_dict(),
+            't5_state_dict': t5_model.state_dict(),
             # Add any other information you want to save
         }
-        torch.save(checkpoint, f'TR-OCR_models/combined_dataset_checkpoint_epoch_{epoch}.pth')
-        print(f'Checkpoint saved: TR-OCR_models/combined_dataset_checkpoint_epoch_{epoch}.pth')
+        torch.save(checkpoint, f'{out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
+        print(f'Checkpoint saved: {out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
 
     print(f"\n")
     average_loss = total_loss / len(train_dataloader)
