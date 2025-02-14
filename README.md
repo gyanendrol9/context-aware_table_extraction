@@ -64,14 +64,14 @@ This framework involves three main modules to digitize tabular data effectively:
    ```bash  
     # create ocrenv env in conda
     conda create --name ocrenv python=3.8
-    
-    # Update the environment using the provided YAML file
-    conda env update --name ocrenv --file environment/ocrenv.yml
     ```
 
 3. Install dependencies:
     ```bash 
     pip install -r requirements.txt  
+    
+    # You can also update the environment using the provided YAML file [Optional]
+    conda env update --name ocrenv --file environment/ocrenv.yml
     ```
 
 4. Dataset Setup:
