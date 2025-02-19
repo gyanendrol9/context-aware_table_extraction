@@ -156,8 +156,10 @@ This framework involves three main components:
 
 6. Evaluate the TrOCR model performance on the test set:
     ```bash 
-    python testing-finetuned-TrOCR.py <image_source_dir> <output_dir>  
-    python TDE-evaluation-v2.py
+    python testing-finetuned-TrOCR.py <dataset_dir> <output_dir> <tr_ocr_checkpoint_dir>
+
+    # Example
+    python testing-finetuned-TrOCR.py UoS_Data_Rescue UoS_Data_Rescue/TrOCR_evaluation UoS_Data_Rescue/TR-OCR-ctx-checkpoint
     ```
 
 7. To digitize new tabular records, the pipeline combines the three modules into a single workflow. The pipeline takes a folder of input images and processes them to generate structured tabular data in a desire folder. Use the provided script to process the images and generate structured output.

@@ -19,6 +19,7 @@ import sys
 
 work_dir = sys.argv[1]
 out_dir = sys.argv[2]
+pretrained_path = sys.argv[3]
 
 if not os.path.exists(out_dir):
     os.mkdir(out_dir)
@@ -185,11 +186,9 @@ def calculate_cer_and_f1score(ground_truth, predicted):
     return cer, f1score_ocr, edit_distance
 
 # Specify the path to the checkpoint file
-pretrained_path = f'{work_dir}/checkpoint_dir' #TrOCR-GloSAT-DRAfrica-without-augmentation/'
 checkpoints = [pth for pth in os.listdir(pretrained_path) if '.pth' in pth]
 
 macro_scores = []
-
 for pth in checkpoints:
     checkpoint_path = f"{pretrained_path}/{pth}"
     # checkpoint_path = 'combined_dataset_checkpoint_epoch_0.pth'
