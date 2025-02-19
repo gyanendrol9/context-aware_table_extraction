@@ -71,7 +71,7 @@ This framework involves three main modules to digitize tabular data effectively:
     pip install -r requirements.txt  
     
     # You can also update the environment using the provided YAML file [Optional]
-    conda env update --name ocrenv --file environment/ocrenv.yml [Optional]
+    conda env update --name ocrenv --file environment/ocrenv.yml # [Optional]
     ```
 
 4. Dataset Setup:
@@ -84,8 +84,9 @@ This framework involves three main modules to digitize tabular data effectively:
     ```
 
     - Dataset Structure
-    For training the model, the dataset must be structured in the following JSON format. You can format your custom dataset accordingly, ensuring each entry includes the following fields:  
+    For training the OCR model, the dataset must be structured in the following JSON format. You can format your custom dataset accordingly, ensuring each entry includes the following fields:  
         > **`img_path`**: A string representing the file path to the image.
+
         > **`text`**: A string representing the text associated with the image.
 
     - JSON Structure Example
@@ -120,15 +121,27 @@ This framework involves three main components:
     - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
-        python train-trocr-combine-loss.py <image_source_dir> <output_dir>
+        python train-trocr-ctx.py <dataset_dir> <output_dir>
+        
+        # Examples
+        python train-trocr.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-checkpoint
+        python train-trocr-ctx.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-ctx-checkpoint
         ```
+
     - **Training Instructions on IRIDIS 5/IRIDIS X:**  
         ```bash
-        sbatch run_sbatch_ocr.sh train-trocr-combine-loss.py <image_source_dir> <output_dir>
+        sbatch run_sbatch_ocr.sh train-trocr-ctx.py <dataset_dir> <output_dir>
+        
+        # Examples 
+        sbatch run_sbatch_ocr.sh train-trocr-ctx.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-ctx-checkpoint
+        sbatch run_sbatch_ocr.sh train-trocr.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-checkpoint
         ```
     - **Text extraction:**  
         ```bash
-        python text_extraction-folder_v2.py <image_source_dir> <output_dir>
+        python text_extraction-folder_v2.py <image_source_dir> <output_dir> <tr_ocr_checkpoint>
+
+        # Example
+        python text_extraction-folder_v2.py UoS_Data_Rescue/Images UoS_Data_Rescue/Tabular_Data_reconstruction UoS_Data_Rescue/TR-OCR-ctx-checkpoint/best_epoch.pth
         ```
 
     > Step 3: Heuristic Approach to Tabular Data Reconstruction  
@@ -148,8 +161,13 @@ This framework involves three main components:
     ```
 
 7. To digitize new tabular records, the pipeline combines the three modules into a single workflow. The pipeline takes a folder of input images and processes them to generate structured tabular data in a desire folder. Use the provided script to process the images and generate structured output.
-    ```bash
-    bash text-extraction-pipeline-folder-input.sh <image_source_dir> <output_dir>
+    ```bash        
+    # Change the python environment path in the bash file before running the following command.
+    bash text-extraction-pipeline-folder-input.sh <image_source_dir> <output_dir> <tr_ocr_checkpoint>
+    
+    # Example
+    bash text-extraction-pipeline-folder-input.sh UoS_Data_Rescue/Images UoS_Data_Rescue/Tabular_Data_reconstruction UoS_Data_Rescue/TR-OCR-ctx-checkpoint/best_epoch.pth
+
     ```
 
 ### Results:

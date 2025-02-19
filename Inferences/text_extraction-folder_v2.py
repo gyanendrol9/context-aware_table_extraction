@@ -39,8 +39,10 @@ import numpy as np
 img_dir = sys.argv[1]
 out_dir = sys.argv[2]
 
-workdir = 'Tabular-Data-Extraction'
-
+if not os.path.exists(out_dir):
+    os.mkdir(out_dir)
+    
+checkpoint_path = sys.argv[3]
 
 def thresholding(image):
     return cv.threshold(image, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)[1]
@@ -209,9 +211,6 @@ model.config.vocab_size = model.config.decoder.vocab_size
 
 t5_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
 t5_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
-
-# Specify the path to the checkpoint file
-checkpoint_path = f"{workdir}/checkpoint_dir/combined_dataset_checkpoint_epoch_2.pth" # TrOCR-DRAfrica-augmentation
 
 # Load the checkpoint
 checkpoint = torch.load(checkpoint_path)
