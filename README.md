@@ -121,7 +121,7 @@ This framework involves three main components:
     - **Training Instructions on Ubuntu 20.04 LTS:**  
         ```bash
         conda activate ocr_env   
-        python train-trocr-ctx.py <dataset_dir> <output_dir>
+        python train-trocr-ctx.py <dataset_dir> <output_checkpoint_dir>
         
         # Examples
         python train-trocr.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-checkpoint
@@ -130,7 +130,7 @@ This framework involves three main components:
 
     - **Training Instructions on IRIDIS 5/IRIDIS X:**  
         ```bash
-        sbatch run_sbatch_ocr.sh train-trocr-ctx.py <dataset_dir> <output_dir>
+        sbatch run_sbatch_ocr.sh train-trocr-ctx.py <dataset_dir> <output_checkpoint_dir>
         
         # Examples 
         sbatch run_sbatch_ocr.sh train-trocr-ctx.py UoS_Data_Rescue UoS_Data_Rescue/TR-OCR-ctx-checkpoint
