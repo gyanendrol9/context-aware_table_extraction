@@ -1,6 +1,6 @@
 #Code location
 python_det_env=~/anaconda3/envs/open-mmlab/bin/python 
-detection_code_loc=Inferences/TSR-inference-aclr.py
+detection_code_loc=Inferences/TSR-inference.py
 
 python_ocr_env=~/anaconda3/envs/ocrenv/bin/python
 ocr_code_loc=Inferences/text_extraction-folder_v2.py

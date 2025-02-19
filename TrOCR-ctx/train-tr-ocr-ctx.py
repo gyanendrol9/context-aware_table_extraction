@@ -46,16 +46,19 @@ import json
 # import jsonlines
 import sys
 
+data_dict = []
+glosat_data_dict = []
+
 work_dir = sys.argv[1]
 out_dir = sys.argv[2]
 
 if not os.path.exists(out_dir):
     os.mkdir(out_dir)
 
+outJSON = f'{work_dir}/Augmented-JSON'
 files = os.listdir(f'{work_dir}/Images')
 
 train_ids, test_ids = train_test_split(files, test_size=0.1, random_state=42)
-#Note: save the train_ids and test_ids for evaluation purpose
 
 with open(f"{work_dir}/UoS_Data_Rescue_TDE_dataset.json", 'r') as json_file:
     total_data_dict = json.load(json_file)
@@ -87,10 +90,44 @@ for c, data_dict in enumerate(total_data_dict):
                 croppedimage=img[int(box[1]):int(box[3]),int(box[0]):int(box[2])]
                 pil_image = Image.fromarray(croppedimage)
                 train_data_dict.append(dict(img=pil_image, text=text_info))
+            
+augmented_cells_complete = []
 
-image_paths = [id['img'] for id in train_data_dict]
-texts = [id['text'] for id in train_data_dict]
-word_len = [len(id['text'].split()) for id in train_data_dict]
+cfiles = len(train_ids)
+for c, file in enumerate(train_ids):
+    filename = file.split('.')[0]
+    ann_jsonl = f"{outJSON}/{filename}.json"
+    if os.path.exists(ann_jsonl):
+        print(f'Processing {file} {c}/{cfiles}...')
+        with open(ann_jsonl, 'r') as json_file:
+            # Load the contents of the file into a Python object (dictionary or list)
+            augmented_cells_c = json.load(json_file)
+            
+            img_path = augmented_cells_c['img_path']
+            file = img_path.split('/')[-1]
+            box = data['cell']
+            text_info = data['text']
+
+            img_dir = f'{work_dir}/Images/{file}'
+            augmented_cells = augmented_cells_c['augmented_cells']
+            
+            if file not in images:
+                img = cv.imread(img_dir)
+                images[file] = img
+            else:
+                img = images[file]
+
+            for (cell, text) in augmented_cells:
+                # try:
+                    croppedimage=img[int(cell[1]):int(cell[3]),int(cell[0]):int(cell[2])] #img[y:y+h, x:x+w]
+                    im_pil = Image.fromarray(croppedimage)
+                    augmented_cells_complete.append(dict(img=im_pil, text=text))
+                # except:
+                #     pass
+
+image_paths = [id['img'] for id in train_data_dict+augmented_cells_complete]
+texts = [id['text'] for id in train_data_dict+augmented_cells_complete]
+word_len = [len(id['text'].split()) for id in train_data_dict+augmented_cells_complete]
 
 from torch.utils.data import Dataset
 from PIL import Image
@@ -133,60 +170,49 @@ average_size = (120, 80)
 max_len = 190
 batch_size = 32
 
+del augmented_cells_complete, train_data_dict, total_data_dict
+
+print(f'Loading pretrained models')
+
+cache_dir = "pretrained_model"
+
 ocr_model_name = "microsoft/trocr-large-handwritten"
-
 processor = TrOCRProcessor.from_pretrained(ocr_model_name, cache_dir=cache_dir)
-ocr_model = VisionEncoderDecoderModel.from_pretrained(ocr_model_name, cache_dir=cache_dir)
+model = VisionEncoderDecoderModel.from_pretrained(ocr_model_name, cache_dir=cache_dir)
 
-ocr_model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
-ocr_model.config.pad_token_id = processor.tokenizer.pad_token_id
-ocr_model.config.vocab_size = ocr_model.config.decoder.vocab_size
-
-train_dataset = MyTrainDataset(image_paths, texts, processor, max_len, image_size=average_size)
-train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
-del train_dataset
-
-optimizer = Adam(ocr_model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
-loss_function = nn.CrossEntropyLoss()  # Define the appropriate loss function for your OCR task
-
-checkpoint_path = f"{outdir}/pretrained_previous_checkpoint.pth"
-
-if os.path.exists(checkpoint_path):
-    # Load the checkpoint
-    print(f'Loading pretrained checkpoint {checkpoint_path}')
-    checkpoint = torch.load(checkpoint_path)
-    # print(checkpoint.keys())
-    
-    # Remove 'module.' prefix from keys if loading on a single GPU
-    new_state_dict = {}
-    for key, value in checkpoint['model_state_dict'].items():
-        new_key = key.replace("module.", "")  # Remove 'module.' prefix
-        new_state_dict[new_key] = value
-
-    # Load the new_state_dict into the model
-    ocr_model.load_state_dict(new_state_dict)
-
-    # Load the ocr model's state dictionary from the checkpoint
-    pre_epoch = checkpoint['epoch']
-    del checkpoint
-else:
-    pre_epoch = 0
+model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
+model.config.pad_token_id = processor.tokenizer.pad_token_id
+model.config.vocab_size = model.config.decoder.vocab_size
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+t5_model_name = 'yelpfeast/byt5-base-english-ocr-correction'
+t5_model = T5ForConditionalGeneration.from_pretrained(t5_model_name, cache_dir=cache_dir)
+t5_tokenizer = AutoTokenizer.from_pretrained(t5_model_name, cache_dir=cache_dir)
 
 # Use DataParallel to utilize multiple GPUs
 gpus = torch.cuda.device_count()
 if gpus > 1:# Check if PyTorch can access GPUs
     print(f"Number of GPUs available: {gpus}")
-    ocr_model = torch.nn.DataParallel(ocr_model)
+    model = torch.nn.DataParallel(model)
+    t5_model = torch.nn.DataParallel(t5_model)
 
-ocr_model.to(device)
+model.to(device)
+t5_model.to(device)
+
+optimizer = Adam(model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
+loss_function = nn.CrossEntropyLoss()  # Define the appropriate loss function for your OCR task
+
+train_dataset = MyTrainDataset(image_paths, texts, processor, max_len, image_size=average_size)
+train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+del train_dataset, image_paths, texts
 
 max_input_length = 190
 tot_epochs = 40
-for epoch in range(pre_epoch+1,tot_epochs):
-    ocr_model.train()
+
+for epoch in range(tot_epochs):
+    model.train()
     total_loss = 0
 
     print(f"Starting training epoch: {epoch+1}")
@@ -195,26 +221,36 @@ for epoch in range(pre_epoch+1,tot_epochs):
         optimizer.zero_grad()
         images = batch["pixel_values"].to(device)
         labels = batch["texts_ids"].squeeze(1).long().to(device)
-        outputs = ocr_model(pixel_values= images, labels=labels)
-        l1 = outputs.loss.mean()  # Make sure l1 is a scalar
+        outputs = model(pixel_values= images, labels=labels)
         
-        l1.backward()  
+        generated_ids = model.generate(images)
+        label_tokens = processor.batch_decode(labels, skip_special_tokens=True)
+        generated_tokens = processor.batch_decode(generated_ids, skip_special_tokens=True)
+        
+        generated_tensor_list = [torch.tensor(list(text.encode("utf-8"))) for text in generated_tokens]
+        padded_tensors = pad_sequence([torch.cat((tensor, torch.zeros(max_input_length - len(tensor)))) for tensor in generated_tensor_list], batch_first=True)
+        
+        label_tensor_list = [torch.tensor(list(text.encode("utf-8"))) for text in label_tokens]
+        label_padded_tensors = pad_sequence([torch.cat((tensor, torch.zeros(max_input_length - len(tensor)))) for tensor in label_tensor_list], batch_first=True)
+        
+        loss = t5_model(padded_tensors.long().to(device), labels=label_padded_tensors.long().to(device)).loss # forward pass
+        print(f"Batch: {batch_num + 1} Epoch:{epoch}/{tot_epochs} Loss: {loss}", end='\r')
+
+        total_loss += loss.item()
+        
+        loss.backward()
         optimizer.step()
-
-        # Optionally, accumulate total loss
-        total_loss += l1.item() 
-        
-        print(f"Batch: {batch_num + 1} Epoch:{epoch}/{tot_epochs} OCR Loss: {l1}", end='\r')
-
+    
     # Save model checkpoint
     checkpoint = {
         'epoch': epoch,
-        'model_state_dict': ocr_model.state_dict(),
+        'ocr_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
+        't5_state_dict': t5_model.state_dict(),
+        # Add any other information you want to save
     }
-    torch.save(checkpoint, f'{outdir}/combined_dataset_sep-loss_epoch_{epoch}.pth')
-    print(f'Checkpoint saved: {outdir}/combined_dataset_sep-loss_epoch_{epoch}.pth')
+    torch.save(checkpoint, f'{out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
+    print(f'Checkpoint saved: {out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
 
     average_loss = total_loss / len(train_dataloader)
-    print(f"\nEpoch: {epoch}, Loss: {average_loss}")
-    
+    print(f"Epoch: {epoch+1}, Loss: {average_loss}")
