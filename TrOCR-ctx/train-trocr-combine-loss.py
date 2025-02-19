@@ -60,6 +60,7 @@ train_ids, test_ids = train_test_split(files, test_size=0.1, random_state=42)
 with open(f"{work_dir}/UoS_Data_Rescue_TDE_dataset.json", 'r') as json_file:
     total_data_dict = json.load(json_file)
     
+<<<<<<< HEAD
 train_data_dict = []
 images = {}
 cfiles = len(total_data_dict)
@@ -74,6 +75,12 @@ for c, data_dict in enumerate(total_data_dict):
             file = img_path.split('/')[-1]
             box = data['cell']
             text_info = data['text']
+=======
+ann_jsonl = f"{img_source}/textrecog_train_clean.json" # This dataset also contain the neighbour cell information added for each target cell to train.
+with open(ann_jsonl, 'r') as json_file:
+    data_dict = json.load(json_file)
+train_data_dict = data_dict
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 
             img_dir = f'{work_dir}/{img_path}'
             
@@ -88,6 +95,7 @@ for c, data_dict in enumerate(total_data_dict):
                 pil_image = Image.fromarray(croppedimage)
                 train_data_dict.append(dict(img=pil_image, text=text_info))
 
+<<<<<<< HEAD
 image_paths = [id['img'] for id in train_data_dict]
 texts = [id['text'] for id in train_data_dict]
 word_len = [len(id['text'].split()) for id in train_data_dict]
@@ -98,6 +106,12 @@ from PIL import Image
 from transformers import T5ForConditionalGeneration, AutoTokenizer
 from torch.optim import Adam
 from torch.nn.utils.rnn import pad_sequence
+=======
+ann_jsonl = f"{img_source}/textrecog_val_clean.json" # This dataset also contain the neighbour cells information added for each target cell to train.
+with open(ann_jsonl, 'r') as json_file:
+    data_dict = json.load(json_file)
+val_data_dict = data_dict
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 
 class MyTrainDataset(Dataset):
     def __init__(self, images, texts, processor, max_len, image_size=(224, 224)):

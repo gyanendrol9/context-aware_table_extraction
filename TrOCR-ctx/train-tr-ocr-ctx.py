@@ -3,7 +3,11 @@ from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 from transformers import AutoTokenizer, AutoProcessor, AutoModelForTokenClassification
 
 from PIL import Image, ImageDraw, ImageFont
+<<<<<<< HEAD
 # import matplotlib.pyplot as plt 
+=======
+import matplotlib.pyplot as plt 
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
     
 def draw_bbox(image, bbox):
     new_width = image.width
@@ -36,6 +40,7 @@ from transformers import (
 
 import torch
 import torch.nn as nn
+<<<<<<< HEAD
 # from nltk.metrics import distance
 import cv2 as cv
 import random
@@ -44,6 +49,15 @@ from sklearn.model_selection import train_test_split
 import os
 import json
 # import jsonlines
+=======
+from nltk.metrics import distance
+import cv2 as cv
+import random
+
+import os
+import json
+import jsonlines
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 import sys
 
 data_dict = []
@@ -52,6 +66,7 @@ glosat_data_dict = []
 work_dir = sys.argv[1]
 out_dir = sys.argv[2]
 
+<<<<<<< HEAD
 if not os.path.exists(out_dir):
     os.mkdir(out_dir)
 
@@ -61,10 +76,17 @@ files = os.listdir(f'{work_dir}/Images')
 train_ids, test_ids = train_test_split(files, test_size=0.1, random_state=42)
 
 with open(f"{work_dir}/UoS_Data_Rescue_TDE_dataset.json", 'r') as json_file:
+=======
+outJSON = f'{work_dir}/Augmented-JSON'
+files = os.listdir(f'{work_dir}/Images')
+
+with open(f"{work_dir}/completed_annotated_dataset.json", 'r') as json_file:
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
     total_data_dict = json.load(json_file)
     
 train_data_dict = []
 images = {}
+<<<<<<< HEAD
 cfiles = len(total_data_dict)
 
 for c, data_dict in enumerate(total_data_dict):
@@ -97,6 +119,35 @@ cfiles = len(train_ids)
 for c, file in enumerate(train_ids):
     filename = file.split('.')[0]
     ann_jsonl = f"{outJSON}/{filename}.json"
+=======
+for data_dict in total_data_dict:
+    for data in data_dict['cell_info']:
+        img_path = data['img_path']
+        file = img_path.split('/')[-1]
+        box = data['cell']
+        text_info = data['text']
+
+        img_dir = f'{work_dir}/{img_path}'
+        
+        if file not in images:
+            img = cv.imread(img_dir)
+            images[file] = img
+        else:
+            img = images[file]
+            
+        if '@@@' not in text_info  or '$$$' not in text_info or '###' not in text_info:
+            croppedimage=img[int(box[1]):int(box[3]),int(box[0]):int(box[2])]
+            pil_image = Image.fromarray(croppedimage)
+            train_data_dict.append(dict(img=pil_image, text=text_info))
+            
+augmented_cells_complete = []
+
+cfiles = len(files)
+for c, file in enumerate(files):
+    filename = file.split('.')[0]
+    ann_jsonl = f"{outJSON}/{filename}.json"
+    
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
     if os.path.exists(ann_jsonl):
         print(f'Processing {file} {c}/{cfiles}...')
         with open(ann_jsonl, 'r') as json_file:
@@ -108,7 +159,12 @@ for c, file in enumerate(train_ids):
             box = data['cell']
             text_info = data['text']
 
+<<<<<<< HEAD
             img_dir = f'{work_dir}/Images/{file}'
+=======
+            img_dir = f'{work_dir}/{img_path}'
+           
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
             augmented_cells = augmented_cells_c['augmented_cells']
             
             if file not in images:
@@ -124,11 +180,15 @@ for c, file in enumerate(train_ids):
                     augmented_cells_complete.append(dict(img=im_pil, text=text))
                 # except:
                 #     pass
+<<<<<<< HEAD
 
 image_paths = [id['img'] for id in train_data_dict+augmented_cells_complete]
 texts = [id['text'] for id in train_data_dict+augmented_cells_complete]
 word_len = [len(id['text'].split()) for id in train_data_dict+augmented_cells_complete]
 
+=======
+                
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 from torch.utils.data import Dataset
 from PIL import Image
 # import nlpaug.augmenter.char as nac
@@ -166,6 +226,7 @@ class MyTrainDataset(Dataset):
 
         return inputs
     
+<<<<<<< HEAD
 average_size = (120, 80)
 max_len = 190
 batch_size = 32
@@ -179,12 +240,45 @@ cache_dir = "pretrained_model"
 ocr_model_name = "microsoft/trocr-large-handwritten"
 processor = TrOCRProcessor.from_pretrained(ocr_model_name, cache_dir=cache_dir)
 model = VisionEncoderDecoderModel.from_pretrained(ocr_model_name, cache_dir=cache_dir)
+=======
+aug_cell_count = len(augmented_cells_complete)
+pc = 0.6
+considered_aug_cells = int(aug_cell_count * pc)
+
+train_cell_count = len(train_data_dict)
+pc = 0.6
+considered_train_cells = int(train_cell_count * pc)
+
+random.shuffle(train_data_dict)
+random.shuffle(augmented_cells_complete)
+
+image_paths = [id['img'] for id in train_data_dict[:considered_train_cells]+augmented_cells_complete[:considered_aug_cells]]
+texts = [id['text'] for id in train_data_dict[:considered_train_cells]+augmented_cells_complete[:considered_aug_cells]]
+word_len = [len(id['text'].split()) for id in train_data_dict[:considered_train_cells]+augmented_cells_complete[:considered_aug_cells]]
+
+average_size = (120, 80)
+max_len = 190
+
+train_dataset = MyTrainDataset(image_paths, texts, processor, max_len, image_size=average_size)
+# train_dataset = MyTrainDataset(image_paths, texts, processor, max_len)
+train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True)
+del train_dataset
+
+print(f'Loading pretrained models')
+
+# cache_dir = "~/.cache/huggingface/hub/"
+model_name = "microsoft/trocr-large-handwritten"
+
+processor = TrOCRProcessor.from_pretrained(model_name, cache_dir=cache_dir)
+model = VisionEncoderDecoderModel.from_pretrained(model_name, cache_dir=cache_dir)
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 
 model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
 model.config.pad_token_id = processor.tokenizer.pad_token_id
 model.config.vocab_size = model.config.decoder.vocab_size
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+<<<<<<< HEAD
 
 t5_model_name = 'yelpfeast/byt5-base-english-ocr-correction'
 t5_model = T5ForConditionalGeneration.from_pretrained(t5_model_name, cache_dir=cache_dir)
@@ -198,11 +292,18 @@ if gpus > 1:# Check if PyTorch can access GPUs
     t5_model = torch.nn.DataParallel(t5_model)
 
 model.to(device)
+=======
+model.to(device)
+
+t5_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
+t5_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 t5_model.to(device)
 
 optimizer = Adam(model.parameters(), lr=1e-5)  # Adjust the learning rate as needed
 loss_function = nn.CrossEntropyLoss()  # Define the appropriate loss function for your OCR task
 
+<<<<<<< HEAD
 train_dataset = MyTrainDataset(image_paths, texts, processor, max_len, image_size=average_size)
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
@@ -211,6 +312,11 @@ del train_dataset, image_paths, texts
 max_input_length = 190
 tot_epochs = 40
 
+=======
+max_input_length = 1200
+
+tot_epochs = 40
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
 for epoch in range(tot_epochs):
     model.train()
     total_loss = 0
@@ -241,6 +347,7 @@ for epoch in range(tot_epochs):
         loss.backward()
         optimizer.step()
     
+<<<<<<< HEAD
     # Save model checkpoint
     checkpoint = {
         'epoch': epoch,
@@ -252,5 +359,20 @@ for epoch in range(tot_epochs):
     torch.save(checkpoint, f'{out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
     print(f'Checkpoint saved: {out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
 
+=======
+    if epoch%2 == 1:
+        # Save model checkpoint
+        checkpoint = {
+            'epoch': epoch,
+            'ocr_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            't5_state_dict': t5_model.state_dict(),
+            # Add any other information you want to save
+        }
+        torch.save(checkpoint, f'{out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
+        print(f'Checkpoint saved: {out_dir}/combined_dataset_checkpoint_epoch_{epoch}.pth')
+
+    print(f"\n")
+>>>>>>> 8c7156e48ca8b18a7f95f20a5016b5b155203ce4
     average_loss = total_loss / len(train_dataloader)
     print(f"Epoch: {epoch+1}, Loss: {average_loss}")
