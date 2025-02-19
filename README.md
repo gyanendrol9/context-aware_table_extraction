@@ -71,17 +71,21 @@ This framework involves three main modules to digitize tabular data effectively:
     pip install -r requirements.txt  
     
     # You can also update the environment using the provided YAML file [Optional]
-    conda env update --name ocrenv --file environment/ocrenv.yml
+    conda env update --name ocrenv --file environment/ocrenv.yml [Optional]
     ```
 
 4. Dataset Setup:
     The dataset is hosted on Zenodo. Download the dataset and extract it to the data directory:
-    [UoS_Data_Rescue Dataset](https://ceur-ws.org/Vol-3649/Paper1.pdf)
+    [UoS_Data_Rescue Dataset](https://www.researchsquare.com/article/rs-5462018/v1)
+    ```bash 
+    mkdir UoS_Data_Rescue
+
+    #Store the dataset and model checkpoints inside this folder
+    ```
 
     - Dataset Structure
-    The dataset is organized in a JSON format, where each entry contains the following fields:
+    For training the model, the dataset must be structured in the following JSON format. You can format your custom dataset accordingly, ensuring each entry includes the following fields:  
         > **`img_path`**: A string representing the file path to the image.
-
         > **`text`**: A string representing the text associated with the image.
 
     - JSON Structure Example
