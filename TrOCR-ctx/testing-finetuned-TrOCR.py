@@ -7,9 +7,9 @@ import re
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 from transformers import AutoTokenizer
+from sklearn.model_selection import train_test_split
 
 from PIL import Image
-
 
 import torch
 import os
@@ -17,9 +17,12 @@ import json
 import jsonlines
 import sys
 
-img_source = sys.argv[1]
-workdir = sys.argv[2]
+work_dir = sys.argv[1]
+out_dir = sys.argv[2]
 
+if not os.path.exists(out_dir):
+    os.mkdir(out_dir)
+    
 model_name = "microsoft/trocr-large-handwritten"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -29,7 +32,6 @@ model = VisionEncoderDecoderModel.from_pretrained(model_name)
 model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
 model.config.pad_token_id = processor.tokenizer.pad_token_id
 model.config.vocab_size = model.config.decoder.vocab_size
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load and preprocess the image
@@ -63,7 +65,7 @@ def get_ocr_output(image):
         text = tokenizer.decode(token_id)
         if i < len(probabilities):  # Skip if index out of range
             score = probabilities[i][0, token_id].item()
-        # if text!='<s>' and text!='</s>':
+            
         tokens_with_confidence.append((text,score))
 
     scores = []
@@ -100,18 +102,39 @@ class MyTrainDataset(Dataset):
         
         return inputs
 
-out_dir = f'{workdir}/TR-OCR-drafrica-result'
-if not os.path.exists(out_dir):
-    os.mkdir(out_dir)
+files = os.listdir(f'{work_dir}/Images')
+train_ids, test_ids = train_test_split(files, test_size=0.1, random_state=42) # Load the save test_ids instead, if stored.
 
-ann_jsonl = f"{img_source}/textrecog_test_clean.json" # This dataset also contain the neighbour cell information added for each target cell to test.
-with open(ann_jsonl, 'r') as json_file:
-    data_dict = json.load(json_file)
-test_data_dict = data_dict
+test_data_dict = []
+images = {}
+cfiles = len(total_data_dict)
+
+for c, data_dict in enumerate(total_data_dict):
+    img_path = data_dict['img_path']
+    file = img_path.split('/')[-1]
+    if file in test_ids:
+        print(f'Processing {file} {c}/{cfiles}...')
+        for data in data_dict['cell_info']:
+            img_path = data['img_path']
+            file = img_path.split('/')[-1]
+            box = data['cell']
+            text_info = data['text']
+
+            img_dir = f'{work_dir}/{img_path}'
+            
+            if file not in images:
+                img = cv.imread(img_dir)
+                images[file] = img
+            else:
+                img = images[file]
+                
+            if '@@@' not in text_info  or '$$$' not in text_info or '###' not in text_info:
+                croppedimage=img[int(box[1]):int(box[3]),int(box[0]):int(box[2])]
+                pil_image = Image.fromarray(croppedimage)
+                test_data_dict.append(dict(img=pil_image, text=text_info))
 
 image_paths = [id['img'] for id in test_data_dict]
 texts = [id['text'] for id in test_data_dict]
-word_len = [len(id['text'].split()) for id in test_data_dict]
 
 test_dataset = MyTrainDataset(image_paths, texts, processor, 190)
 test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=4, shuffle=True)
@@ -162,7 +185,7 @@ def calculate_cer_and_f1score(ground_truth, predicted):
     return cer, f1score_ocr, edit_distance
 
 # Specify the path to the checkpoint file
-pretrained_path = f'{workdir}/TrOCR-GloSAT-DRAfrica-without-augmentation/' #TrOCR-GloSAT-DRAfrica-without-augmentation/'
+pretrained_path = f'{work_dir}/checkpoint_dir' #TrOCR-GloSAT-DRAfrica-without-augmentation/'
 checkpoints = [pth for pth in os.listdir(pretrained_path) if '.pth' in pth]
 
 macro_scores = []
@@ -300,8 +323,9 @@ for pth in checkpoints:
         del ground_truths, predictions, average_rouge_1, average_rouge_2, average_rouge_l, average_wer_scores, average_cer_scores, exact_matched, average_f1_chars_scores, average_f1_tokens_scores
     except:
         pass
+    
 #---------loop ends---------
 result_label = ['Epoch', 'Rogue-1', 'Rogue-2', 'Rogue-L', 'WER', 'CER', 'EM', 'F1_chars_scores', 'F1_tokens_scores']
 df = pd.DataFrame(macro_scores, columns=result_label)
-df.to_csv(f'{out_dir}/trOCR-drafrica-macro-scores-new.csv', index=False)
+df.to_csv(f'{out_dir}/trOCR-macro-scores.csv', index=False)
 print(df)

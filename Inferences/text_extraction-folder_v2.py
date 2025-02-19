@@ -159,8 +159,8 @@ def get_ocr_output(image):
     generated_ids = outputs.sequences
     predicted_texts = processor.batch_decode(generated_ids, skip_special_tokens=True)
     
-    inputs = ocr_tokenizer(predicted_texts, return_tensors="pt", padding=True).to(device)
-    output_sequences = ocr_model.generate(
+    inputs = t5_tokenizer(predicted_texts, return_tensors="pt", padding=True).to(device)
+    output_sequences = t5_model.generate(
 
         input_ids=inputs["input_ids"],
 
@@ -169,7 +169,7 @@ def get_ocr_output(image):
         do_sample=False,  # disable sampling to test if batching affects output
 
     )
-    spell_correction = ocr_tokenizer.batch_decode(output_sequences.to(device), skip_special_tokens=True)
+    spell_correction = t5_tokenizer.batch_decode(output_sequences.to(device), skip_special_tokens=True)
 
 
     # Get the logits (confidence scores)
@@ -196,41 +196,6 @@ def get_ocr_output(image):
     del pixel_values, probabilities, logits, image
     return predicted_texts, spell_correction, scores, tokens_with_confidence
 
-def get_ocr_output_v1(image):
-    pixel_values = preprocess_image(image)
-
-    pixel_values = pixel_values.to(device)
-    # Generate prediction with logits
-    outputs = model.generate(pixel_values, return_dict_in_generate=True, output_scores=True, max_length=16)
-
-    # Decode the predictions
-    generated_ids = outputs.sequences
-    predicted_texts = processor.batch_decode(generated_ids, skip_special_tokens=True)
-
-    # Get the logits (confidence scores)
-    logits = outputs.scores
-
-    # Convert logits to probabilities (softmax)
-    probabilities = [F.softmax(logit, dim=-1) for logit in logits]
-
-    # Extract confidence scores for the predicted tokens and combine tokens with their confidence scores
-    tokens_with_confidence = []
-    for i, token_id in enumerate(generated_ids[0]):
-        text = tokenizer.decode(token_id)
-        if i < len(probabilities):  # Skip if index out of range
-            score = probabilities[i][0, token_id].item()
-        # if text!='<s>' and text!='</s>':
-        tokens_with_confidence.append((text,score))
-
-    scores = []
-    for token, score in tokens_with_confidence:
-        scores.append(score)
-        # print(f"Token: {token}, Confidence Score: {score:.4f}")
-
-    scores = sum(scores)/len(tokens_with_confidence)
-    del pixel_values, probabilities, logits, image
-    return predicted_texts, scores, tokens_with_confidence
-
 #Load model
 model_name = "microsoft/trocr-large-handwritten"
 
@@ -242,11 +207,11 @@ model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
 model.config.pad_token_id = processor.tokenizer.pad_token_id
 model.config.vocab_size = model.config.decoder.vocab_size
 
-ocr_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
-ocr_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
+t5_model = T5ForConditionalGeneration.from_pretrained('yelpfeast/byt5-base-english-ocr-correction')
+t5_tokenizer = AutoTokenizer.from_pretrained("yelpfeast/byt5-base-english-ocr-correction")
 
 # Specify the path to the checkpoint file
-checkpoint_path = f"{workdir}/TrOCR-GloSAT-DRAfrica-without-augmentation/combined_dataset_checkpoint_epoch_2.pth"
+checkpoint_path = f"{workdir}/checkpoint_dir/combined_dataset_checkpoint_epoch_2.pth" # TrOCR-DRAfrica-augmentation
 
 # Load the checkpoint
 checkpoint = torch.load(checkpoint_path)
@@ -260,14 +225,12 @@ for key, value in checkpoint['model_state_dict'].items():
 # Load the new_state_dict into the model
 model.load_state_dict(new_state_dict)
 
-if 'ocr_model_state_dict' in checkpoint:
-    ocr_model.load_state_dict(checkpoint['ocr_model_state_dict'])
-else:
-    ocr_model.load_state_dict(checkpoint['ocr_state_dict'])
+if 't5_state_dict' in checkpoint:
+    t5_model.load_state_dict(checkpoint['t5_state_dict'])
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-ocr_model.to(device)
+t5_model.to(device)
 
 color_flag = {}
 color_flag[0] = (0, 0, 0)       # Black correct
