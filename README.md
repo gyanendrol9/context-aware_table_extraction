@@ -141,6 +141,8 @@ This framework involves three main components:
         python text_extraction-folder_v2.py <image_source_dir> <output_dir> <tr_ocr_checkpoint>
 
         # Example
+        ls UoS_Data_Rescue/TR-OCR-ctx-checkpoint
+        
         python text_extraction-folder_v2.py UoS_Data_Rescue/Images UoS_Data_Rescue/Tabular_Data_reconstruction UoS_Data_Rescue/TR-OCR-ctx-checkpoint/best_epoch.pth
         ```
 
