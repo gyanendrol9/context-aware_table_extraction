@@ -185,3 +185,6 @@ This work is funded through the Natural Environment Research Council (grant [NE/
 ### Project links:
 - [GloSAT](https://glosat.org/)
 - [DR-Africa](https://www.southampton.ac.uk/~sem03/DR-Africa.html)
+
+### Citation:
+Singh, L.G., Middleton, S.E. Tabular context-aware optical character recognition and tabular data reconstruction for historical records. IJDAR (2025). https://doi.org/10.1007/s10032-025-00543-9
